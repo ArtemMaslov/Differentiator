@@ -13,10 +13,75 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Tree">
+      <UniqueIdentifier>{1d65872c-ca69-4c37-9d07-a33b64c32040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stack">
+      <UniqueIdentifier>{42390d1c-9c66-4132-955d-8d1887258ecd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StringLibrary">
+      <UniqueIdentifier>{e206d95b-426b-45b6-b941-7da6e51209fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logs">
+      <UniqueIdentifier>{de6fa189-d1d1-476f-a782-1b8f3000c890}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Tree\Tree.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StackLibrary\Stack.cpp">
+      <Filter>Stack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StackLibrary\StackDiagnostic.cpp">
+      <Filter>Stack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StackLibrary\StackProtection.cpp">
+      <Filter>Stack</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StringLibrary\StringLibrary.cpp">
+      <Filter>StringLibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Logs\Logs.cpp">
+      <Filter>Logs</Filter>
+    </ClCompile>
+    <ClCompile Include="Differentiator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Tree\Tree.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StackLibrary\Stack.h">
+      <Filter>Stack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StackLibrary\StackDiagnostic.h">
+      <Filter>Stack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StackLibrary\StackProtection.h">
+      <Filter>Stack</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StringLibrary\StringLibrary.h">
+      <Filter>StringLibrary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Logs\Logs.h">
+      <Filter>Logs</Filter>
+    </ClInclude>
+    <ClInclude Include="Differentiator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Parser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
