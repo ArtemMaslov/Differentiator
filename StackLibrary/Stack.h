@@ -136,7 +136,7 @@ int   StackDestructor(Stack *stack);
  * @param value Указатель на значение, которое нужно добавить в стек.
  * @return      Код ошибки, 0 - в случае успешного завершения.
 */
-int   StackPush(Stack *stack, void *value);
+int   StackPush(Stack *stack, void *expression);
 
 /**
  * @brief       Удаляет элемент из конца стека и возвращает его.

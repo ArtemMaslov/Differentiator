@@ -19,11 +19,11 @@ bool ReadFile(Text* text, FILE* file)
 
     size_t fileSize = GetFileSize(file);
 
-    text->buffer = (unsigned char*)calloc(fileSize + 1, sizeof(unsigned char));// Прибавляем 1, чтобы в конце файла был нуль-терминатор
+    text->buffer = (char*)calloc(fileSize + 1, sizeof(char));// Прибавляем 1, чтобы в конце файла был нуль-терминатор
 
     if (text->buffer)
     {
-        size_t readed = fread(text->buffer, sizeof(unsigned char), fileSize, file);
+        size_t readed = fread(text->buffer, sizeof(char), fileSize, file);
         text->bufferSize = readed + 1;
 
         if (readed == 0)

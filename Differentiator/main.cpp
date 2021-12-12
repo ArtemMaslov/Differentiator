@@ -2,6 +2,7 @@
 
 
 #include "..\Logs\Logs.h"
+#include "Differentiator.h"
 
 
 int main(int argc, char* argv[])
@@ -30,6 +31,12 @@ int main(int argc, char* argv[])
         printf("Ошибка открытия файла \"%s\"", fileName);
         return 1;
     }
+
+    Differentiator diff = {};
+    DifferentiatorConstructor(&diff, file);
+
+
+    DifferentiatorDestructor(&diff);
 
     return 0;
 }

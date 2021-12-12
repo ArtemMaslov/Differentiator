@@ -98,7 +98,7 @@ int StackDestructor(Stack *stack)
     return STACKERR_NO_ERRORS;
 }
 
-int StackPush(Stack *stack, void *value)
+int StackPush(Stack *stack, void *expression)
 {
 #ifdef STACK_LOGS
     LogLine(stackLogFile, "StackPush", DEBUG);
@@ -106,7 +106,7 @@ int StackPush(Stack *stack, void *value)
 
     int error = ValidateStack(stack);
 
-    if (value == nullptr)
+    if (expression == nullptr)
     {
 #ifdef STACK_LOG_ERRORS
     LogLine(stackLogFile, "ERROR: Trying to push null value", ERROR);
@@ -122,7 +122,7 @@ int StackPush(Stack *stack, void *value)
 
     if (stack)
     {
-        memmove((char*)stack->data + stack->elementSize * stack->stackSize++, value, stack->elementSize);
+        memmove((char*)stack->data + stack->elementSize * stack->stackSize++, expression, stack->elementSize);
 #ifdef STACK_CRC
         CalculateStackCRC(stack);
 #endif

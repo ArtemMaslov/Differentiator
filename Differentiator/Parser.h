@@ -2,7 +2,7 @@
 #define PARSER_H_
 
 
-
+bool ParseDiffTree(Differentiator* diff, Text* text);
 
 
 #endif

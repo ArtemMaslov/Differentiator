@@ -4,15 +4,16 @@
 
 #include <stdio.h>
 
+
 struct String
 {
-    unsigned char*  ptr;
+    char*  ptr;
     size_t length;
 };
 
 struct Text
 {
-    unsigned char*   buffer;
+    char*   buffer;
     size_t  bufferSize;
     size_t  stringsCount;
     String* strings;

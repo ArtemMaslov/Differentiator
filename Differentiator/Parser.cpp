@@ -3,13 +3,82 @@
 #include <ctype.h>
 
 
-#include "../Tree/Tree.h"
+#include "..\MathTree\MathTree.h"
+#include "..\StackLibrary\Stack.h"
+#include "Differentiator.h"
 
 
-unsigned char* SkipSpaceSymbols(unsigned char* ptr);
+static char* SkipSpaceSymbols(char* ptr);
+
+static void ParseNodeValue(char** ptr, MathNode* node);
+
+static bool CheckCorrectInput(Text* text);
 
 
-bool CheckCorrectInput(Text* text)
+bool ParseDiffTree(Differentiator* diff, Text* text)
+{
+    char* ptr = text->buffer;
+
+    if (!CheckCorrectInput(text))
+        return false;
+
+    Stack stk = {};
+    StackConstructor(&stk, sizeof(MathNode*));
+
+    while (*ptr)
+    {
+        ptr = SkipSpaceSymbols(ptr);
+
+        if (*ptr == '(')
+        {
+            MathNode* node = TreeNodeConstructor(nullptr);
+
+            if (!node)
+                return false;
+            
+            StackPush(&stk, &node);
+        }
+        else if (*ptr == ')')
+        {
+            MathNode** _childNode  = (MathNode**)StackPop(&stk);
+            MathNode** _parentNode = (MathNode**)StackPop(&stk);
+
+            if (!_childNode)
+                return false;
+
+            if (!_parentNode) // Корень дерева
+            {
+                diff->tree.root = *_childNode;
+                break;
+            }
+
+            MathNode* childNode  = *_childNode;
+            MathNode* parentNode = *_parentNode;
+
+            if (parentNode->nodeRight == nullptr)
+                TreeAddRightNode(parentNode, childNode);
+            else
+                TreeAddLeftNode(parentNode, childNode);
+
+            StackPush(&stk, &parentNode);
+        }
+        else
+        {
+            MathNode** _childNode  = (MathNode**)StackPop(&stk);
+
+            if (!_childNode)
+                return false;
+            
+            ParseNodeValue(&ptr, *_childNode);
+
+            StackPush(&stk, _childNode);
+        }
+        ptr++;
+    }
+    StackDestructor(&stk);
+}
+
+static bool CheckCorrectInput(Text* text)
 {
     char*  ptr = text->buffer;
     size_t lBracketsCount = 0;
@@ -35,81 +104,30 @@ bool CheckCorrectInput(Text* text)
     return false;
 }
 
-bool ParseFile(Tree* tree, Text* text)
+static void ParseNodeValue(char** ptr, MathNode* node)
 {
-    unsigned char* ptr = text->buffer;
+    *ptr = SkipSpaceSymbols(*ptr);
 
-    if (!CheckCorrectInput(text))
-        return false;
+    char* string = *ptr;
 
-    Stack stk = {};
-    StackConstructor(&stk, sizeof(Node*));
+    while (**ptr && **ptr != '(' || **ptr != ')')
+        (*ptr)++;
 
-    while (*ptr)
-    {
-        if (*ptr == '(')
-        {
-            Node* node = TreeNodeConstructor(nullptr);
+    size_t strLength = (size_t)(*ptr - string + 1);
+    string = *ptr;
 
-            if (!node)
-                return false;
-            
-            ptr++;
-            ptr = SkipSpaceSymbols(ptr);
-            
-            unsigned char* strStart = ptr;
+    // Skip spaces right edge
+    while (strLength > 0 && isspace((unsigned char)string[strLength - 1]))
+        strLength--;
 
-            while (*ptr != '}' && *ptr != '{')
-                ptr++;
-            ptr--;
+    if (sscanf(string, "%lf", &node->expression.))
 
-            String string =
-            {
-                (char*)strStart,
-                (size_t)(ptr - strStart + 1)
-            };
-
-            while (string.length > 0 && isspace((unsigned char)string.ptr[string.length - 1]))
-                string.length--;
-
-            node->value = string;
-
-            StackPush(&stk, &node);
-        }
-        else if (*ptr == ')')
-        {
-            Node** _childNode  = (Node**)StackPop(&stk);
-            Node** _parentNode = (Node**)StackPop(&stk);
-
-            if (!_childNode)
-                return false;
-
-            if (!_parentNode) // Корень дерева
-            {
-                akinator->tree.root = *_childNode;
-                break;
-            }
-
-            Node* childNode  = *_childNode;
-            Node* parentNode = *_parentNode;
-
-            if (parentNode->nodeRight == nullptr)
-                TreeAddRightNode(parentNode, childNode);
-            else
-                TreeAddLeftNode(parentNode, childNode);
-
-            StackPush(&stk, &parentNode);
-
-        }
-        ptr++;
-    }
-
-    StackDestructor(&stk);
+    node->expression = string;
 }
 
-unsigned char* SkipSpaceSymbols(unsigned char* ptr)
+static char* SkipSpaceSymbols(char* ptr)
 {
-    while (*ptr && isspace(*ptr))
+    while (*ptr && isspace((unsigned char)*ptr))
         ptr++;
     return ptr;
 }

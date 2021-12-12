@@ -3,7 +3,7 @@
 
 
 /// Включает построение графа по базе данных.
-#define GRAPHVIZ
+//#define GRAPHVIZ
 
 
 #endif

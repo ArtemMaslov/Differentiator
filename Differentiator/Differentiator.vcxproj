@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -140,22 +140,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Logs\Logs.cpp" />
+    <ClCompile Include="..\MathTree\MathTree.cpp" />
     <ClCompile Include="..\StackLibrary\Stack.cpp" />
     <ClCompile Include="..\StackLibrary\StackDiagnostic.cpp" />
     <ClCompile Include="..\StackLibrary\StackProtection.cpp" />
     <ClCompile Include="..\StringLibrary\StringLibrary.cpp" />
-    <ClCompile Include="..\Tree\Tree.cpp" />
     <ClCompile Include="Differentiator.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Logs\Logs.h" />
+    <ClInclude Include="..\MathTree\MathTree.h" />
     <ClInclude Include="..\StackLibrary\Stack.h" />
     <ClInclude Include="..\StackLibrary\StackDiagnostic.h" />
     <ClInclude Include="..\StackLibrary\StackProtection.h" />
     <ClInclude Include="..\StringLibrary\StringLibrary.h" />
-    <ClInclude Include="..\Tree\Tree.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Differentiator.h" />
     <ClInclude Include="Parser.h" />

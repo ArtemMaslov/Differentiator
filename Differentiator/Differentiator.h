@@ -2,18 +2,18 @@
 #define DIFFERENTIATOR_H_
 
 
-#include "..\Tree\Tree.h"
+#include "..\MathTree\MathTree.h"
 #include "..\StringLibrary\StringLibrary.h"
 
 
 struct Differentiator
 {
     Text text;
-    Tree tree;
+    MathTree tree;
 };
 
 
-void DifferentiatorConstructor(Differentiator* diff, FILE* inputFile);
+bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile);
 
 void DifferentiatorDestructor(Differentiator* diff);
 
