@@ -19,7 +19,7 @@ bool ReadFile(Text* text, FILE* file)
 
     size_t fileSize = GetFileSize(file);
 
-    text->buffer = (char*)calloc(fileSize + 1, sizeof(char));// РџСЂРёР±Р°РІР»СЏРµРј 1, С‡С‚РѕР±С‹ РІ РєРѕРЅС†Рµ С„Р°Р№Р»Р° Р±С‹Р» РЅСѓР»СЊ-С‚РµСЂРјРёРЅР°С‚РѕСЂ
+    text->buffer = (char*)calloc(fileSize + 1, sizeof(char));// Прибавляем 1, чтобы в конце файла был нуль-терминатор
 
     if (text->buffer)
     {
@@ -28,14 +28,14 @@ bool ReadFile(Text* text, FILE* file)
 
         if (readed == 0)
         {
-            puts("РћС€РёР±РєР° С‡С‚РµРЅРёСЏ С„Р°Р№Р»Р°.");
+            puts("Ошибка чтения файла.");
             return false;
         }
         text->buffer[readed] = '\0';
     }
     else
     {
-        puts("РћС€РёР±РєР° РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё.");
+        puts("Ошибка выделения памяти.");
         return false;
     }
 

@@ -2,7 +2,7 @@
 #define DIFFERENTIATOR_H_
 
 
-#include "..\MathTree\MathTree.h"
+#include "..\Math\MathTree\MathTree.h"
 #include "..\StringLibrary\StringLibrary.h"
 
 
@@ -16,6 +16,8 @@ struct Differentiator
 bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile);
 
 void DifferentiatorDestructor(Differentiator* diff);
+
+MathTree* Differentiate(Differentiator* diff, char diffVar);
 
 
 #endif

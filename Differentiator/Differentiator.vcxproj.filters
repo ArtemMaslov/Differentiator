@@ -22,8 +22,20 @@
     <Filter Include="Logs">
       <UniqueIdentifier>{de6fa189-d1d1-476f-a782-1b8f3000c890}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MathTree">
+    <Filter Include="Math">
+      <UniqueIdentifier>{d75f0222-8879-469a-8a9b-066d67aa2c51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\MathExpression">
+      <UniqueIdentifier>{b8eddfd1-f453-4d5d-b70b-17e347de51ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\MathTree">
       <UniqueIdentifier>{1d65872c-ca69-4c37-9d07-a33b64c32040}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StdParser">
+      <UniqueIdentifier>{b11bdbef-4131-4aa8-b327-928c44da9203}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math\MathParser">
+      <UniqueIdentifier>{f7f04001-8176-4ac0-8fc2-c7b89159aee6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -48,11 +60,17 @@
     <ClCompile Include="Differentiator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Parser.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="..\Math\MathTree\MathTree.cpp">
+      <Filter>Math\MathTree</Filter>
     </ClCompile>
-    <ClCompile Include="..\MathTree\MathTree.cpp">
-      <Filter>MathTree</Filter>
+    <ClCompile Include="..\Math\MathExpression\MathExpression.cpp">
+      <Filter>Math\MathExpression</Filter>
+    </ClCompile>
+    <ClCompile Include="..\StdParser\StdParser.cpp">
+      <Filter>StdParser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Math\MathParser\MathParser.cpp">
+      <Filter>Math\MathParser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -74,14 +92,23 @@
     <ClInclude Include="Differentiator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Parser.h">
+    <ClInclude Include="..\Math\MathTree\MathTree.h">
+      <Filter>Math\MathTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\MathExpression\MathExpression.h">
+      <Filter>Math\MathExpression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\StdParser\StdParser.h">
+      <Filter>StdParser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\MathParser\MathParser.h">
+      <Filter>Math\MathParser</Filter>
+    </ClInclude>
+    <ClInclude Include="DifferentiatorDSL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
+    <ClInclude Include="UndefDSL.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\MathTree\MathTree.h">
-      <Filter>MathTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

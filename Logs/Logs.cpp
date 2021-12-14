@@ -19,7 +19,7 @@ bool LogConstructor(const char* logFileName, const char* caption)
 
     if (!logFile)
     {
-        printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° СЃ Р»РѕРіР°РјРё. FileName = \"%s\"", logFileName);
+        printf("Ошибка открытия файла с логами. FileName = \"%s\"", logFileName);
         return false;
     }
 
@@ -50,7 +50,7 @@ bool LogConstructor(const char* logFileName, const char* caption)
 }
 
 /**
- * @brief      Р—Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р» Р»РѕРіРѕРІ.
+ * @brief      Закрывает файл логов.
 */
 void LogDestructor()
 {
@@ -59,10 +59,10 @@ void LogDestructor()
 }
 
 /**
- * @brief                    Р”РѕР±Р°РІР»СЏРµС‚ СЃС‚СЂРѕРєСѓ РІ С„Р°Р№Р» Р»РѕРіРѕРІ.
- * @param file               РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕС‚РѕРє РІС‹РІРѕРґР°.
- * @param message            РЎС‚СЂРѕРєР°, РєРѕС‚РѕСЂСѓСЋ РЅРµРѕР±С…РѕРґРёРјРѕ РґРѕР±Р°РІРёС‚СЊ.
- * @param dublicateToConsole Р•СЃР»Рё true, С‚Рѕ РґСѓР±Р»РёСЂСѓРµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РІ РєРѕРЅСЃРѕР»СЊ. РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ false
+ * @brief                    Добавляет строку в файл логов.
+ * @param file               Указатель на поток вывода.
+ * @param message            Строка, которую необходимо добавить.
+ * @param dublicateToConsole Если true, то дублирует сообщения в консоль. По умолчанию false
 */
 void LogLine(const char* message, int logLevel, bool dublicateToConsole)
 {

@@ -223,8 +223,8 @@ void StackDump_(Stack *stack, FILE *file,
 
     if (stack)
     {
-        const int leftOffset1 = 4 - 1;// â€žÐ¸ÑÐ»Ð¾ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð¾Ð², Ð·Ð°Ð´Ð°ÑŽÑ‰Ð¸Ñ… Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ ÑÐ»ÐµÐ²Ð°. 4 Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð°
-        const int leftOffset2 = 8 - 1;// â€žÐ¸ÑÐ»Ð¾ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð¾Ð², Ð·Ð°Ð´Ð°ÑŽÑ‰Ð¸Ñ… Ð¾Ñ‚ÑÑ‚ÑƒÐ¿ ÑÐ»ÐµÐ²Ð°. 8 Ð¿Ñ€Ð¾Ð±ÐµÐ»Ð¾Ð²
+        const int leftOffset1 = 4 - 1;// „èñëî ïðîáåëîâ, çàäàþùèõ îòñòóï ñëåâà. 4 ïðîáåëà
+        const int leftOffset2 = 8 - 1;// „èñëî ïðîáåëîâ, çàäàþùèõ îòñòóï ñëåâà. 8 ïðîáåëîâ
         
 #ifdef STACK_CANARIES
         fprintf(file, "%*s canaryLeft    = %#llX\n", leftOffset1, "", stack->canaryLeft);

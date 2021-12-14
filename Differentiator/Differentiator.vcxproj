@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -140,25 +140,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Logs\Logs.cpp" />
-    <ClCompile Include="..\MathTree\MathTree.cpp" />
+    <ClCompile Include="..\Math\MathExpression\MathExpression.cpp" />
+    <ClCompile Include="..\Math\MathParser\MathParser.cpp" />
+    <ClCompile Include="..\Math\MathTree\MathTree.cpp" />
     <ClCompile Include="..\StackLibrary\Stack.cpp" />
     <ClCompile Include="..\StackLibrary\StackDiagnostic.cpp" />
     <ClCompile Include="..\StackLibrary\StackProtection.cpp" />
+    <ClCompile Include="..\StdParser\StdParser.cpp" />
     <ClCompile Include="..\StringLibrary\StringLibrary.cpp" />
     <ClCompile Include="Differentiator.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Logs\Logs.h" />
-    <ClInclude Include="..\MathTree\MathTree.h" />
+    <ClInclude Include="..\Math\MathExpression\MathExpression.h" />
+    <ClInclude Include="..\Math\MathParser\MathParser.h" />
+    <ClInclude Include="..\Math\MathTree\MathTree.h" />
     <ClInclude Include="..\StackLibrary\Stack.h" />
     <ClInclude Include="..\StackLibrary\StackDiagnostic.h" />
     <ClInclude Include="..\StackLibrary\StackProtection.h" />
+    <ClInclude Include="..\StdParser\StdParser.h" />
     <ClInclude Include="..\StringLibrary\StringLibrary.h" />
-    <ClInclude Include="Config.h" />
     <ClInclude Include="Differentiator.h" />
-    <ClInclude Include="Parser.h" />
+    <ClInclude Include="DifferentiatorDSL.h" />
+    <ClInclude Include="UndefDSL.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
