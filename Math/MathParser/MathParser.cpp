@@ -95,13 +95,13 @@ bool ParseMathTree(Text* text, MathTree* tree)
     return true;
 }
 
-void WriteTreeToFile(MathTree* tree, FILE* file)
+void WriteTreeToFile(MathTree* problem, FILE* file)
 {
-    assert(tree);
+    assert(problem);
     assert(file);
 
-    if (tree->root)
-        WriteTreeNodeToFile(tree->root, file, 0);
+    if (problem->root)
+        WriteTreeNodeToFile(problem->root, file, 0);
 }
 
 bool ReadTreeFromFile(MathTree* tree, Text* text, FILE* file)

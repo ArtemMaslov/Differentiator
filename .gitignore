@@ -37,3 +37,9 @@
 Debug/*
 x64/*
 out.txt
+
+*.aux
+/Latex/*.log
+/Latex/*.pdf
+*.gz
+*.toc

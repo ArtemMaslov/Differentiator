@@ -37,6 +37,9 @@
     <Filter Include="Math\MathParser">
       <UniqueIdentifier>{f7f04001-8176-4ac0-8fc2-c7b89159aee6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Latex">
+      <UniqueIdentifier>{5bc1498c-3620-49b3-815d-c76bc0fbcdff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -72,6 +75,9 @@
     <ClCompile Include="..\Math\MathParser\MathParser.cpp">
       <Filter>Math\MathParser</Filter>
     </ClCompile>
+    <ClCompile Include="..\Latex\Latex.cpp">
+      <Filter>Latex</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\StackLibrary\Stack.h">
@@ -89,9 +95,6 @@
     <ClInclude Include="..\Logs\Logs.h">
       <Filter>Logs</Filter>
     </ClInclude>
-    <ClInclude Include="Differentiator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\Math\MathTree\MathTree.h">
       <Filter>Math\MathTree</Filter>
     </ClInclude>
@@ -104,11 +107,20 @@
     <ClInclude Include="..\Math\MathParser\MathParser.h">
       <Filter>Math\MathParser</Filter>
     </ClInclude>
-    <ClInclude Include="DifferentiatorDSL.h">
+    <ClInclude Include="Differentiator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UndefDSL.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\Math\MathExpression\MathDSL.h">
+      <Filter>Math\MathExpression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\MathExpression\UndefMathDSL.h">
+      <Filter>Math\MathExpression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Latex\Latex.h">
+      <Filter>Latex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Latex\LatexTemplates.h">
+      <Filter>Latex</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 
 
 #include "..\Logs\Logs.h"
+#include "..\Latex\Latex.h"
 #include "Differentiator.h"
 
 #include "..\Math\MathParser\MathParser.h"
@@ -40,22 +41,32 @@ int main(int argc, char* argv[])
 
     Differentiator diff = {};
     DifferentiatorConstructor(&diff, file);
-    
-    MathTree* diffTree = Differentiate(&diff, 'x');
-    
-    CreateTreeGraph("srcTask.png", &diff.tree);
-
-    if (diffTree)
-        CreateTreeGraph("diffTask.png", diffTree);
-    
-    FILE* outFile = fopen("outDiffTask.txt", "w");
-
-    WriteTreeToFile(diffTree, outFile);
-
-    fclose(outFile);
-
-    DifferentiatorDestructor(&diff);
     fclose(file);
+
+    Latex latex = {};
+    if (!OpenLatexArticle(&latex, "article"))
+    {
+        puts("Ошибка открытия файла");
+        return false;
+    }
+    
+    LatexMathProblem(&latex, &diff.problem);
+
+    if (!Differentiate(&diff, 'x', &latex))
+    {
+        puts("Ошибка дифференцирования");
+        return false;
+    }
+    CreateHtmlGraphicLog(GRAPH_LOG_NAME);
+
+    LatexMathProblemAnswer(&latex, &diff.problem, &diff.answer);
+    CloseLatexArticle(&latex);
+    //MathTreeOptimize(&diff.diffTree);
+    
+    //if (diff.diffTree.root)
+    //    CreateTreeGraph("optimizedDiffTask.png", &diff.diffTree);
+    
+    DifferentiatorDestructor(&diff);
 
     return 0;
 }

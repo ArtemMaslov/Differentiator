@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Latex\Latex.cpp" />
     <ClCompile Include="..\Logs\Logs.cpp" />
     <ClCompile Include="..\Math\MathExpression\MathExpression.cpp" />
     <ClCompile Include="..\Math\MathParser\MathParser.cpp" />
@@ -152,8 +153,12 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Latex\Latex.h" />
+    <ClInclude Include="..\Latex\LatexTemplates.h" />
     <ClInclude Include="..\Logs\Logs.h" />
+    <ClInclude Include="..\Math\MathExpression\MathDSL.h" />
     <ClInclude Include="..\Math\MathExpression\MathExpression.h" />
+    <ClInclude Include="..\Math\MathExpression\UndefMathDSL.h" />
     <ClInclude Include="..\Math\MathParser\MathParser.h" />
     <ClInclude Include="..\Math\MathTree\MathTree.h" />
     <ClInclude Include="..\StackLibrary\Stack.h" />
@@ -162,8 +167,6 @@
     <ClInclude Include="..\StdParser\StdParser.h" />
     <ClInclude Include="..\StringLibrary\StringLibrary.h" />
     <ClInclude Include="Differentiator.h" />
-    <ClInclude Include="DifferentiatorDSL.h" />
-    <ClInclude Include="UndefDSL.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

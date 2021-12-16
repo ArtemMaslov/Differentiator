@@ -9,34 +9,35 @@
 #include "MathTree.h"
 #include "..\..\Logs\Logs.h"
 
+#include "..\MathExpression\MathDSL.h"
 
-#define NUM node->expression.me_number
-#define LEFT node->nodeLeft
-#define RIGHT node->nodeRight
-#define CALC(node) CalculateNode(node, tree, canCalculate)
+#define CALC(node) CalculateNode(node, problem, canCalculate)
 
 
-static bool TreeNodeFindVariables(MathNode* node, MathTree* tree);
+static bool TreeNodeFindVariables(MathNode* node, MathTree* problem);
 
-static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate);
+static double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate);
 
-static bool TreeAddVariable(MathTree* tree, char variable);
+static bool TreeAddVariable(MathTree* problem, char variable);
 
 static void OptimizeNodeToNumber(MathNode* node, double number);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///                           Конструкторы и деструкторы
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-bool TreeConstructor(MathTree* tree)
+bool TreeConstructor(MathTree* problem)
 {
     LogLine("Вызван TreeConstructor()", LOG_DEBUG);
-    assert(tree);
+    assert(problem);
 
-    tree->root = nullptr;
+    problem->root = nullptr;
 
-    tree->varCapacity  = MATH_AVERAGE_VAR_COUNT;
-    tree->variables = (char*)calloc(tree->varCapacity, sizeof(char));
-    tree->values    = (double*)calloc(tree->varCapacity, sizeof(double));
+    problem->varCapacity  = MATH_AVERAGE_VAR_COUNT;
+    problem->variables = (char*)calloc(problem->varCapacity, sizeof(char));
+    problem->values    = (double*)calloc(problem->varCapacity, sizeof(double));
 
     return true;
 }
@@ -63,17 +64,17 @@ MathNode* TreeNodeConstructor(const MathExpression* expression)
     return node;
 }
 
-bool TreeDestructor(MathTree* tree) 
+bool TreeDestructor(MathTree* problem) 
 {
     LogLine("Вызван TreeDestructor()", LOG_DEBUG);
     // assert(tree);
     
-    if (tree)
+    if (problem)
     {
-        TreeNodeDestructor(tree->root);
+        TreeNodeDestructor(problem->root);
 
-        free(tree->values);
-        free(tree->variables);
+        free(problem->values);
+        free(problem->variables);
     }
 
     return true;
@@ -98,6 +99,9 @@ bool TreeNodeDestructor(MathNode* node)
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///                     Работа с деревом (стандартные функции)
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
 void TreeAddLeftNode(MathNode* parent, MathNode* child)
 {
@@ -119,28 +123,15 @@ void TreeAddRightNode(MathNode* parent, MathNode* child)
     child->parent = parent;
 }
 
-void TreeMeasure(MathTree* tree, MathNode* node, size_t length)
+size_t TreeMeasure(MathNode* node)
 {
-    LogLine("Вызван TreeMeasure()", LOG_DEBUG);
-    //assert(tree);
-    //assert(node);
+    size_t result = 1;
+    if (node->nodeLeft)
+        result += TreeMeasure(node->nodeLeft);
+    if (node->nodeRight)
+        result += TreeMeasure(node->nodeRight);
 
-    if (!node || !tree)
-    {
-        tree->treeLength = 0;
-        return;
-    }
-
-    length++;
-
-    if (LEFT)
-        TreeMeasure(tree, LEFT, length);
-
-    if (RIGHT)
-        TreeMeasure(tree, RIGHT, length);
-
-    if (tree->treeLength < length)
-        tree->treeLength = length;
+    return result;
 }
 
 #define CHECK_NODE(node)                                        \
@@ -193,6 +184,33 @@ bool IsLeaf(MathNode* node)
         return false;
 }
 
+/**
+ * @brief       Сравнивает два поддерева.
+ * @param node1 Первое поддерево.
+ * @param node2 Второе поддерево.
+ * @return      true, если поддеревья равны.
+*/
+bool CompareTrees(MathNode* node1, MathNode* node2)
+{
+    if (MathExpressionEqual(&node1->expression, &node2->expression))
+    {
+        // Либо оба имеют равных потомков, либо оба не имеют вообще потомков
+        if ((node1->nodeLeft == nullptr) == (node2->nodeLeft == nullptr) && 
+            !CompareTrees(node1->nodeLeft, node2->nodeLeft))
+            return false;
+        
+        if ((node1->nodeLeft == nullptr) == (node2->nodeLeft == nullptr) && 
+            !CompareTrees(node1->nodeRight, node2->nodeRight))
+            return false;
+
+        return true;
+    }
+    return false;
+}
+
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///                              Поиск элементов дерева
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
@@ -255,55 +273,58 @@ MathNode* GetNodeFromStack(Stack* stk, size_t index)
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///                      Работа с математическими переменными
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-bool TreeFindVariables(MathTree* tree)
+bool TreeFindVariables(MathTree* problem)
 {
-    return TreeNodeFindVariables(tree->root, tree);
+    return TreeNodeFindVariables(problem->root, problem);
 }
 
-static bool TreeNodeFindVariables(MathNode* node, MathTree* tree)
+static bool TreeNodeFindVariables(MathNode* node, MathTree* problem)
 {
     if (node->expression.type == ME_VARIABLE)
     {
-        if (!TreeFindVariable(tree, node->expression.me_variable) &&
-            !TreeAddVariable(tree, node->expression.me_variable))
+        if (!TreeFindVariable(problem, node->expression.me_variable) &&
+            !TreeAddVariable(problem, node->expression.me_variable))
                 return false;
     }
 
     bool res = true;
 
     if (LEFT)
-        res = TreeNodeFindVariables(LEFT, tree);
+        res = TreeNodeFindVariables(LEFT, problem);
     if (RIGHT)
-        res = TreeNodeFindVariables(RIGHT, tree);
+        res = TreeNodeFindVariables(RIGHT, problem);
 
     return res;
 }
 
-bool TreeFindVariable(MathTree* tree, char variable)
+bool TreeFindVariable(MathTree* problem, char variable)
 {
-    size_t capacity = tree->varCapacity;
+    size_t capacity = problem->varCapacity;
     for (size_t index = 0; index < capacity; index++)
     {
-        if (tree->variables[index] == variable)
+        if (problem->variables[index] == variable)
             return true;
     }
     return false;
 }
 
-static bool TreeAddVariable(MathTree* tree, char variable)
+static bool TreeAddVariable(MathTree* problem, char variable)
 {
     size_t index = 0;
-    for (; index < tree->varCapacity; index++)
+    for (; index < problem->varCapacity; index++)
     {
-        if (tree->variables[index] == '\0')
+        if (problem->variables[index] == '\0')
             break;
     }
 
-    if (index == tree->varCapacity)
+    if (index == problem->varCapacity)
     {
-        char* newVar = (char*)realloc(tree->variables, tree->varCapacity * MATH_VAR_COUNT_SCALE);
-        char* newVal = (char*)realloc(tree->values, tree->varCapacity *MATH_VAR_COUNT_SCALE);
+        char* newVar = (char*)realloc(problem->variables, problem->varCapacity * MATH_VAR_COUNT_SCALE);
+        char* newVal = (char*)realloc(problem->values, problem->varCapacity *MATH_VAR_COUNT_SCALE);
 
         if (!newVar || !newVal)
         {
@@ -313,19 +334,22 @@ static bool TreeAddVariable(MathTree* tree, char variable)
         }
     }
 
-    tree->variables[index] = variable;
+    problem->variables[index] = variable;
     return true;
 }
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///            Проведение вычислений, (подстановка значений переменных)
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-double TreeCalculate(MathTree* tree)
+double TreeCalculate(MathTree* problem)
 {
-    return CalculateNode(tree->root, tree, nullptr);
+    return CalculateNode(problem->root, problem, nullptr);
 }
 
-static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate)
+static double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
 {
     assert(node);
     //assert(tree);
@@ -334,7 +358,7 @@ static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate)
     switch (node->expression.type)
     {
         case ME_NUMBER:
-            return NUM;
+            return GET_NUM(node);
         case ME_CONSTANT:
             switch (node->expression.me_constant)
             {
@@ -345,12 +369,12 @@ static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate)
             }
             break;
         case ME_VARIABLE:
-            if (tree)
+            if (problem)
             {
-                for (int st = 0; st < tree->varCapacity; st++)
+                for (int st = 0; st < problem->varCapacity; st++)
                 {
-                    if (tree->variables[st] == node->expression.me_variable)
-                        return tree->values[st];
+                    if (problem->variables[st] == node->expression.me_variable)
+                        return problem->values[st];
                 }
             }
             break;
@@ -358,31 +382,31 @@ static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate)
             switch (node->expression.me_function)
             {
                 case ME_SIN:
-                    return sin(NUM);
+                    return sin(GET_NUM(node));
                 case ME_COS:
-                    return cos(NUM);
+                    return cos(GET_NUM(node));
                 case ME_TG:
-                    return tan(NUM);
+                    return tan(GET_NUM(node));
                 case ME_CTG:
-                    return 1.0 / tan(NUM);
+                    return 1.0 / tan(GET_NUM(node));
                 case ME_SH:
-                    return sinh(NUM);
+                    return sinh(GET_NUM(node));
                 case ME_CH:
-                    return cosh(NUM);
+                    return cosh(GET_NUM(node));
                 case ME_LN:
-                    return log(NUM);
+                    return log(GET_NUM(node));
                 case ME_SQRT:
-                    return sqrt(NUM);
+                    return sqrt(GET_NUM(node));
                 case ME_CBRT:
-                    return cbrt(NUM);
+                    return cbrt(GET_NUM(node));
                 case ME_ARCSIN:
-                    return asin(NUM);
+                    return asin(GET_NUM(node));
                 case ME_ARCCOS:
-                    return acos(NUM);
+                    return acos(GET_NUM(node));
                 case ME_ARCTG:
-                    return atan(NUM);
+                    return atan(GET_NUM(node));
                 case ME_ARCCTG:
-                    return Pi/2 - atan(NUM);
+                    return Pi/2 - atan(GET_NUM(node));
             }
             break;
         case ME_OPERATOR:
@@ -415,6 +439,26 @@ static double CalculateNode(MathNode* node, MathTree* tree, bool* canCalculate)
     return 0;
 }
 
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///              Оптимизация структуры дерева, сокращение лишних узлов
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+
+#define CHANGE_NODE(child)                                      \
+    {                                                           \
+        if (node->parent->nodeLeft == node)                     \
+            TreeAddLeftNode(node->parent, child);               \
+        else                                                    \
+            TreeAddRightNode(node->parent, child);              \
+    }
+
+#define CLEAR_NODE                                              \
+    {                                                           \
+        TreeNodeDestructor(node);                               \
+        result = true;                                          \
+    }
+
 static void OptimizeNodeToNumber(MathNode* node, double number)
 {
     if (LEFT)
@@ -427,18 +471,42 @@ static void OptimizeNodeToNumber(MathNode* node, double number)
     node->expression.me_number = number;
 }
 
-bool OptimizeCalculatedNodes(MathNode* node)
+/**
+ * @brief      Оптимизирует дерево, выполняя все оптимизации
+ *             (см в MathTree.h функции MathTreeOptimize<X>, где <X> - вид оптимизации)
+ * @param tree Указатель на дерево
+*/
+void MathTreeOptimize(MathTree* problem)
+{
+    bool result = false;
+    do
+    { 
+        result = false;
+        while (MathTreeOptimizeCalculatedNodes(problem->root))
+            result = true;
+        while (OptimizeWorthlessNodes(problem->root))
+            result = true;
+        while (OptimizeWorthlessTrees(problem->root))
+            result = true;
+    }
+    while (result);
+}
+
+/**
+ * @brief      Оптимизирует узлы, которые можно вычислить. Например: (4+8)*9 -> 108; sin(Pi/6) -> 0.5;
+ *             Тригонометрические функции вычисляются в радианах!
+ * @param node Узел, который нужно оптимизировать.
+ * @return     true, если была оптимизация. false, если дерево оптимизировать нельзя.
+*/
+bool MathTreeOptimizeCalculatedNodes(MathNode* node)
 {
     bool result = false;
     if (LEFT)
-        result |= OptimizeCalculatedNodes(LEFT);
+        result |= MathTreeOptimizeCalculatedNodes(LEFT);
     if (RIGHT)
-        result |= OptimizeCalculatedNodes(RIGHT);
+        result |= MathTreeOptimizeCalculatedNodes(RIGHT);
 
-    if (!result)
-        return false;
-
-    if (node->expression.type == ME_OPERATOR || node->expression.type == ME_FUNCTION)
+    if (TYPE_EQUAL(node, ME_OPERATOR) || TYPE_EQUAL(node, ME_FUNCTION))
     {
         bool canCalculate = true;
         double result = CalculateNode(node, nullptr, &canCalculate);
@@ -452,18 +520,215 @@ bool OptimizeCalculatedNodes(MathNode* node)
     return false;
 }
 
+/**
+ * @brief      Оптимизирует узлы, которые можно сократить. Например: x*1 -> x; x^0 -> 1;
+ *             Для корректной работы данной оптимизации первоначально выполнить 
+ *             while (OptimizeCalculatedNodes(node) == true);
+ * @param node Узел, который нужно оптимизировать.
+ * @return     true, если была оптимизация. false, если дерево оптимизировать нельзя.
+*/
 bool OptimizeWorthlessNodes(MathNode* node)
 {
+    bool result = false;
+    if (TYPE_EQUAL(node, ME_OPERATOR))
+    {
+        switch (node->expression.me_operator)
+        {
+            case ME_ADDITION:
+            {
+                // Оптимизируем:
+                // 0 + x = x
+                // x + 0 = x
+                if (GET_NUM(LEFT) == 0)
+                {
+                    CHANGE_NODE(RIGHT);
 
-    return false;
+                    RIGHT = nullptr;
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(RIGHT) == 0)
+                {
+                    CHANGE_NODE(LEFT);
+
+                    LEFT = nullptr;
+                    CLEAR_NODE;
+                }
+                break;
+            }
+            case ME_SUBTRACTION:
+            {
+                // 0 - x = -x (не оптимизируем).
+                // x - 0 = x (оптимизируем)
+                if (GET_NUM(RIGHT) == 0)
+                {
+                    CHANGE_NODE(LEFT);
+
+                    LEFT = nullptr;
+                    CLEAR_NODE;
+                }
+                break;
+            }
+            case ME_MULTIPLICATION:
+            {
+                // Оптимизируем:
+                // 0 * x = 0
+                // x * 0 = 0
+                // 1 * x = x
+                // x * 1 = x
+                if (GET_NUM(LEFT) == 0 || GET_NUM(RIGHT) == 0)
+                {
+                    MathNode* newNode = NUM(0);
+                    CHANGE_NODE(newNode);
+
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(LEFT) == 1)
+                {
+                    CHANGE_NODE(RIGHT);
+
+                    RIGHT = nullptr;
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(RIGHT) == 1)
+                {
+                    CHANGE_NODE(LEFT);
+
+                    LEFT = nullptr;
+                    CLEAR_NODE;
+                }
+                break;
+            }
+            case ME_DIVISION:
+            {
+                // Оптимизируем:
+                // 0 / x = 0
+                // x / 0 = ERROR
+                // x / 1 = x
+                if (GET_NUM(LEFT) == 0)
+                {
+                    MathNode* newNode = NUM(0);
+                    CHANGE_NODE(newNode);
+
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(RIGHT) == 0)
+                {
+                    // ERROR;
+                    return false;
+                }
+                else if (GET_NUM(RIGHT) == 1)
+                {
+                    CHANGE_NODE(LEFT);
+
+                    LEFT = nullptr;
+                    CLEAR_NODE;
+                }
+                break;
+            }
+            case ME_POWER:
+            {
+                // Оптимизируем:
+                // x^1 = x
+                // x^0 = 1
+                // 1^x = 1
+                // 0^x = 0
+                // 0^0 = ERROR
+                if (GET_NUM(RIGHT) == 1)
+                {
+                    CHANGE_NODE(LEFT);
+
+                    LEFT = nullptr;
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(LEFT) == 0 && GET_NUM(RIGHT) == 0)
+                {
+                    // ERROR;
+                    return false;
+                }
+                else if (GET_NUM(RIGHT) == 0 || GET_NUM(LEFT) == 1)
+                {
+                    MathNode* newNode = NUM(1);
+                    CHANGE_NODE(newNode);
+
+                    CLEAR_NODE;
+                }
+                else if (GET_NUM(LEFT) == 0)
+                {
+                    MathNode* newNode = NUM(0);
+                    CHANGE_NODE(newNode);
+
+                    CLEAR_NODE;
+                }
+                break;
+            }
+        }
+    }
+
+    if (!result)
+    {
+        if (LEFT)
+            result |= OptimizeWorthlessNodes(LEFT);
+        if (RIGHT)
+            result |= OptimizeWorthlessNodes(RIGHT);
+    }
+    return result;
 }
 
+/**
+ * @brief      Оптимизирует поддеревья, которые можно сократить. Например (обозначим за A - поддерево): A-A -> 0; A/A -> 1;
+ *             Для корректной работы данной оптимизации первоначально выполнить
+ *             while (OptimizeCalculatedNodes(node) == true); и 
+ *             while (OptimizeWorthlessNodes(node) == true);
+ * @param node Узел, который нужно оптимизировать.
+ * @return     true, если была оптимизация. false, если дерево оптимизировать нельзя.
+*/
 bool OptimizeWorthlessTrees(MathNode* node)
 {
+    bool result = false;
+    // Оптимизируем поддеревья
+    // A-A = 0
+    // A/A = 1
+    // A*A = A^2
+    // A+A = 2*A
+    if (LEFT)
+        result = OptimizeWorthlessTrees(LEFT);
+    if (RIGHT)
+        result = OptimizeWorthlessTrees(RIGHT);
 
-    return false;
+    if (TYPE_EQUAL(node, ME_OPERATOR))
+    {
+        bool LeftEqualRight = CompareTrees(LEFT, RIGHT);
+        if (LeftEqualRight)
+        {
+            switch (node->expression.me_operator)
+            {
+                case ME_ADDITION:
+                    node->expression.me_operator = ME_MULTIPLICATION;
+                    OptimizeNodeToNumber(LEFT, 2);
+                    break;
+                case ME_SUBTRACTION:
+                    OptimizeNodeToNumber(node, 0);
+                    break;
+                case ME_MULTIPLICATION:
+                    node->expression.me_operator = ME_POWER;
+                    OptimizeNodeToNumber(RIGHT, 2);
+                    break;
+                case ME_DIVISION:
+                    OptimizeNodeToNumber(node, 1);
+                    break;
+            }
+            result = true;
+        }
+    }
+    return result;
 }
 
+#undef CHANGE_NODE
+#undef CLEAR_NODE
+
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
+///                   Построение графа дерева с помощью GraphViz
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
@@ -471,11 +736,11 @@ bool OptimizeWorthlessTrees(MathNode* node)
 
 static void CreateNodeGraph(FILE* file, MathNode* node, size_t parentId, bool IsRight);
 
-bool CreateTreeGraph(const char* outImagefileName, MathTree* tree)
+bool CreateTreeGraph(const char* outImagefileName, MathNode* node, bool openFile)
 {
     LogLine("Вызван CreateTreeGraph()", LOG_DEBUG);
     assert(outImagefileName);
-    assert(tree);
+    assert(node);
 
     FILE* file = fopen("treeGraph.gv", "w");
 
@@ -484,37 +749,28 @@ bool CreateTreeGraph(const char* outImagefileName, MathTree* tree)
         LogLine("CreateTreeGraph: ошибка открытия файла.", LOG_ERROR, true);
         return false;
     }
+    CreateGraphCallCount++;
 
-    fseek(file, 0, SEEK_SET);
     fputs("digraph G\n"
           "{\n"
           "    bgcolor=\"lightblue\"\n"
           "    node [fontcolor=gray11, style=filled, fontsize = 18];\n", file);
 
-    CreateNodeGraph(file, tree->root, 0, true);
+    CreateNodeGraph(file, node, 0, true);
 
     fputs("}", file);
 
     fclose(file);
 
-    const size_t cmdDelta = 35;
-    size_t cmdSize = strlen(outImagefileName);
-    char* cmd = (char*)calloc(cmdSize + cmdDelta, sizeof(char));
+    char cmd[500];
 
-    if (!cmd)
-    {
-        LogLine("CreateNodeGraph: не хватает памяти для генерации команды.", LOG_ERROR, true);
-        return false;
-    }
-
-    sprintf(cmd, "dot \"treeGraph.gv\" -Tpng > \"%s\"", outImagefileName);
+    sprintf(cmd, "dot \"treeGraph.gv\" -Tpng > \"%s%d.png\"", outImagefileName, CreateGraphCallCount);
     system(cmd);
 
-    free(cmd);
+    remove("treeGraph.gv");
 
-    //remove("treeGraph.gv");
-
-    system(outImagefileName);
+    if (openFile)
+        system(outImagefileName);
 
     return true;
 }
@@ -571,7 +827,5 @@ static void CreateNodeGraph(FILE* file, MathNode* node, size_t parentId, bool Is
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-#undef NUM
-#undef LEFT
-#undef RIGHT
 #undef CALC
+#include "..\MathExpression\UndefMathDSL.h"

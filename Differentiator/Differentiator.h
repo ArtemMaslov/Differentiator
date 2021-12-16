@@ -4,12 +4,14 @@
 
 #include "..\Math\MathTree\MathTree.h"
 #include "..\StringLibrary\StringLibrary.h"
+#include "..\Latex\Latex.h"
 
 
 struct Differentiator
 {
     Text text;
-    MathTree tree;
+    MathTree problem;
+    MathTree answer;
 };
 
 
@@ -17,7 +19,7 @@ bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile);
 
 void DifferentiatorDestructor(Differentiator* diff);
 
-MathTree* Differentiate(Differentiator* diff, char diffVar);
+bool Differentiate(Differentiator* diff, char diffVar, Latex* latex);
 
 
 #endif

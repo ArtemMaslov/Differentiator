@@ -9,12 +9,12 @@
 #include "..\Logs\Logs.h"
 
 
-static MathNode* DifferentiateNode(MathNode* nodeSrc, char diffVar);
+static MathNode* DifferentiateNode(MathNode* nodeSrc, char diffVar, Latex* latex);
 
 
 bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile)
 {
-    if (!ReadTreeFromFile(&diff->tree, &diff->text, inputFile))
+    if (!ReadTreeFromFile(&diff->problem, &diff->text, inputFile))
         return false;
 
     return true;
@@ -22,103 +22,186 @@ bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile)
 
 void DifferentiatorDestructor(Differentiator* diff)
 {
-    TreeDestructor(&diff->tree);
+    TreeDestructor(&diff->problem);
 
     TextDestructor(&diff->text);
 }
 
-MathTree* Differentiate(Differentiator* diff, char diffVar)
+bool Differentiate(Differentiator* diff, char diffVar, Latex* latex)
 {
-    MathTree* tree = (MathTree*)calloc(1, sizeof(MathTree));
-
-    if (!tree)
-        return nullptr;
-
-    tree->root = DifferentiateNode(diff->tree.root, diffVar);
-    return tree;
+    diff->answer.root = DifferentiateNode(diff->problem.root, diffVar, latex);
+    if (diff->answer.root == nullptr)
+        return false;
+    return true;
 }
 
-#include "DifferentiatorDSL.h"
+#include "..\Math\MathExpression\MathDSL.h"
 
-static MathNode* DifferentiateNode(MathNode* nodeSrc, char diffVar)
+#define IS_DIFF_VAR diffVar == node->expression.me_variable
+
+#define DIF(node)                                               \
+    DifferentiateNode(node, diffVar, latex)
+
+#define COMPLEX_FUNC(node, cmp_src)                             \
+    NewOperatorNode(ME_MULTIPLICATION,                          \
+                    (node),                                     \
+                    DIF(cmp_src, diffVar))
+
+
+static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
 {
-    switch (nodeSrc->expression.type)
+    assert(node);
+    CreateTreeGraph(GraphLogPath, node, false);
+    //assert(latex);
+    MathNode* result = nullptr;
+
+    switch (node->expression.type)
     {
         case ME_CONSTANT:
         case ME_NUMBER:
-            return NUM(0);
+            result = NUM(0);
+            LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+            LatexString(latex, "производная константы равна 0.");
+            break;
         case ME_VARIABLE:
             if (IS_DIFF_VAR)
-                return NUM(1);
+            {
+                result = NUM(1);
+                LatexRandSentence(latex, LATEX_COMMON1);
+                LatexString(latex, "производная x равна 1.");
+            }
             else
-                return NUM(0);
+            {
+                result = NUM(0);
+                LatexRandSentence(latex, LATEX_COMMON2);
+                LatexString(latex, "производная не дифференцируемой переменной принимается равной 0.");
+            }
+            break;
         case ME_FUNCTION:
-            switch (nodeSrc->expression.me_function)
+            switch (node->expression.me_function)
             {
                 case ME_SIN:
-                    return COMPLEX_FUNC(FUNC(ME_COS, COPY(X)), X);
+                    result = COMPLEX_FUNC(FUNC(ME_COS, COPY(X)), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная синуса равна $(\\sin{x})^\\prime = \\cos{x}$.");
+                    break;
                 case ME_COS:
-                    return COMPLEX_FUNC(FUNC(ME_SIN, COPY(X)), X);
+                    result = COMPLEX_FUNC(FUNC(ME_SIN, COPY(X)), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная косинуса равна $(\\cos{x})^\\prime = -\\sin{x}$.");
+                    break;
                 case ME_TG:
-                    return COMPLEX_FUNC(DIV( NUM(1), POW2(FUNC(ME_COS, COPY(X))) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), POW2(FUNC(ME_COS, COPY(X))) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная тангенса равна $(\\tan{x})^\\prime = \\frac{1}{(\\cos{x})^2}$.");
+                    break;
                 case ME_CTG:
-                    return COMPLEX_FUNC(DIV( NUM(-1), POW2(FUNC(ME_SIN, COPY(X))) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(-1), POW2(FUNC(ME_SIN, COPY(X))) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная котангенса равна $(\\cot{x})^\\prime = \\frac{1}{(\\sin{x})^2}$.");
+                    break;
                 case ME_SH:
-                    return COMPLEX_FUNC(FUNC(ME_CH, COPY(X)), X);
+                    result = COMPLEX_FUNC(FUNC(ME_CH, COPY(X)), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная гиперболического синуса равна $(\\sinh{x})^\\prime = \\cosh{x}$.");
+                    break;
                 case ME_CH:
-                    return COMPLEX_FUNC(FUNC(ME_SH, COPY(X)), X);
+                    result = COMPLEX_FUNC(FUNC(ME_SH, COPY(X)), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная гиперболического косинуса равна $(\\cosh{x})^\\prime = \\sinh{x}$.");
+                    break;
                 case ME_LN:
-                    return COMPLEX_FUNC(DIV( NUM(1), COPY(X) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), COPY(X) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная натурального логарифма равна $(\\ln{x})^\\prime = \\frac{1}{x}$.");
+                    break;
                 case ME_SQRT:
-                    return COMPLEX_FUNC(DIV( NUM(1), MUL(NUM(2), COPY(F)) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), MUL(NUM(2), COPY(F)) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная корня вычисляется по формуле $(\\sqrt{x})^\\prime = \\frac{1}{2\\sqrt{x}}$.");
+                    break;
                 case ME_CBRT:
-                    return COMPLEX_FUNC(DIV( NUM(1), MUL( NUM(3), POW2(COPY(F)) ) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), MUL( NUM(3), POW2(COPY(F)) ) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная кубического корня легко берется. Достаточно лишь представить кубический корень в виде степени с рациональным показателем.");
+                    break;
                 case ME_ARCSIN:
-                    return COMPLEX_FUNC(DIV( NUM(1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная $(\\arcsin{x})^\\prime = \\frac{1}{\\sqrt{1 - x^2}}$.");
+                    break;
                 case ME_ARCCOS:
-                    return COMPLEX_FUNC(DIV( NUM(-1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(-1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная $(\\arccos{x})^\\prime = \\frac{-1}{\\sqrt{1 - x^2}}$.");
+                    break;
                 case ME_ARCTG:
-                    return COMPLEX_FUNC(DIV( NUM(1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
+                    result = COMPLEX_FUNC(DIV( NUM(1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, "производная $(\\arctan{x})^\\prime = \\frac{1}{1 + x^2}$.");
+                    break;
                 case ME_ARCCTG:
-                    return COMPLEX_FUNC(DIV( NUM(-1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
-                default:
-                    return nullptr;
+                    result = COMPLEX_FUNC(DIV( NUM(-1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
+                    LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
+                    LatexString(latex, " у производной акркотангенса очень красивая формула: $\\frac{-1}{1 + x^2}$.");
+                    break;
             }
             break;
         case ME_OPERATOR:
-            switch (nodeSrc->expression.me_operator)
+            switch (node->expression.me_operator)
             {
                 case ME_SUBTRACTION:
-                    return SUB(DIF(LEFT), DIF(RIGHT));
+                    result = SUB(DIF(LEFT), DIF(RIGHT));
+                    LatexRandSentence(latex, LATEX_OPERATOR);
+                    LatexString(latex, "производная разности равна разности производных, \\sout{что не скажешь о производной частного}.");
+                    break;
                 case ME_ADDITION:
-                    return ADD(DIF(LEFT), DIF(RIGHT));
+                    result = ADD(DIF(LEFT), DIF(RIGHT));
+                    LatexRandSentence(latex, LATEX_OPERATOR);
+                    LatexString(latex, "производная суммы просто равна сумме производных.");
+                    break;
                 case ME_MULTIPLICATION:
-                    return ADD(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT)));
+                    result = ADD(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT)));
+                    LatexRandSentence(latex, LATEX_OPERATOR);
+                    LatexString(latex, "производная произведения равна $(f(x) \\cdot g(x))^\\prime = (f(x))^\\prime \\cdot g(x) + (g(x))^\\prime \\cdot f(x)$.");
+                    break;
                 case ME_DIVISION:
-                    return DIV( SUB(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT))),
+                    result = DIV( SUB(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT))),
                                 POW2(COPY(RIGHT)));
+                    LatexRandSentence(latex, LATEX_OPERATOR);
+                    LatexString(latex, "производная частного \\sout{имеет очень громоздкую формулу} равна $(f(x) \\cdot g(x))^\\prime = \\frac{(f(x))^\\prime \\cdot g(x) - (g(x))^\\prime \\cdot f(x)}{(g(x))^2}$.");
+                    break;
                 case ME_POWER:
                     if (TYPE_EQUAL(RIGHT, ME_CONSTANT) ||
                         TYPE_EQUAL(RIGHT, ME_NUMBER))
                     {
-                        return MUL( NUM(GET_NUM(RIGHT)), POW( COPY(LEFT), SUB(NUM(GET_NUM(RIGHT)), NUM(1)) ) );
+                        result = MUL( NUM(GET_NUM(RIGHT)), POW( COPY(LEFT), SUB(NUM(GET_NUM(RIGHT)), NUM(1)) ) );
+                        LatexRandSentence(latex, LATEX_COMMON2);
+                        LatexString(latex, "производная степенной функции вычисляется легко по формуле: $(x^n)^\\prime = n \\cdot x^{n-1}$");
                     }
                     else
                     {
-                        return MUL(COPY(F), 
+                        result = MUL(COPY(F), 
                             ADD( 
                             MUL( DIV(RIGHT, LEFT), DIF(LEFT) ), 
                             MUL( FUNC(ME_LN, COPY(LEFT)), DIF(RIGHT) )
                             ) );
+                        LatexRandSentence(latex, LATEX_COMMON2);
+                        LatexString(latex, "производную функции, содержащей возведение в степень всегда неприятно считать! Ведь производная равна такому крокодилу: $(f(x)^{g(x)})^\\prime = f(x)^{g(x)} \\cdot (\\ln{f(x)} \\cdot g(x))^\\prime$");
                     }
                     break;
-                default:
-                    return nullptr;
             }
-        default:
-            return nullptr;
+            break;
     }
+    if (result)
+        LatexMathDiffFormula(latex, node, result);
+
+    return result;
 }
 
-#include "UndefDSL.h"
+#undef DIF
+#undef COMPLEX_FUNC
+#undef IS_DIFF_VAR
+
+#include "..\Math\MathExpression\UndefMathDSL.h"
 

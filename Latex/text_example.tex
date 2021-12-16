@@ -1,0 +1,145 @@
+\documentclass[a4paper,fontsize=16pt]{article}
+\usepackage[utf8]{inputenc}
+\textheight=22.5cm % высота текста
+\textwidth=17cm % ширина текста
+\oddsidemargin= 0pt % отступ от левого края
+\topmargin=-1.5cm % отступ от верхнего края
+\parindent=24pt % абзацный отступ
+\parskip=0pt % интервал между абзацами
+\usepackage[russian]{babel}
+\usepackage{titlepic}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color,colortbl, xcolor}
+\usepackage{pgf}
+\renewcommand\contentsname{Содержание}
+
+\begin{document}
+
+\begin{figure}
+\includegraphics[width=5cm]{MIPT_logo.png}
+\end{figure}
+
+\begin{center}
+\normalsize Московский физико-технический институт \\(госудраственный университет)
+\end{center}
+\vspace{3cm}
+\begin{center}
+
+\textbf {\huge{Практическое руководство по дифференцированию}}
+
+\vspace{0.5cm}
+
+\textbf {\large{Методическое пособие по дисциплине\break <<Введение в математический анализ>>\break\break 1 курс}}
+
+\vspace{0.5cm}
+
+\Large{{\textbf {Маслов А.С.}}}
+
+\end{center}
+
+\vspace{\fill}
+\begin{center}
+	Долгопрудный \\2021
+\end{center}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Введение}
+
+\large{В пособии рассматриваются методы решения задач на взятие производных. В начале рассматриваются производные элементарных функций, приводится необходимая теория для решения сложных задач. Далее рассматриваются примеры решения задач.} 
+
+\newpage
+
+\section{Производные элементарных функций}
+
+
+Из школьного курса алгебры известно, что
+
+\begin{enumerate}
+\item $c^\prime = 0$.
+\item $x^\prime = 1$.
+\item $(\sqrt{x})^\prime = \frac{1}{2\sqrt{x}}$.
+\end{enumerate}
+
+
+Производная степенной функции:
+
+$(x^n)^\prime = n \cdot x^{n-1}$.
+\vspace{0.5cm}
+
+Производные показательной и логарифмической функций:
+
+\begin{enumerate}
+\item $(a^x)^\prime = a^x \cdot \ln{a}$
+\item $(e^x)^\prime = e^x$
+\item $\log_{a}{x} = \frac{1}{x\ln{a}}$
+\item $(\ln{x})^\prime = \frac{1}{x}$
+\end{enumerate}
+
+
+Производные тригонометрических функций:
+
+\begin{enumerate}
+\item $(\sin{x})^\prime = \cos{x}$
+\item $(\cos{x})^\prime = -\sin{x}$
+\item $(\tan{x})^\prime = \frac{1}{(\cos{x})^2}$
+\item $(\cot{x})^\prime = \frac{1}{(\sin{x})^2}$
+\end{enumerate}
+
+
+Производные обратных тригонометрических функций:
+
+\begin{enumerate}
+\item $(\arcsin{x})^\prime = \frac{1}{\sqrt{1 - x^2}}$
+\item $(\arccos{x})^\prime = \frac{-1}{\sqrt{1 - x^2}}$
+\item $(\arctan{x})^\prime = \frac{1}{1 + x^2}$
+\end{enumerate}
+
+
+Производные гиперболических функций:
+
+\begin{enumerate}
+\item $(\sinh{x})^\prime = \cosh{x}$
+\item $(\cosh{x})^\prime = \sinh{x}$
+\end{enumerate}
+
+
+Данного теоретического материала достаточно, чтобы приступить к решению практических задач.
+
+\newpage
+
+\section{Примеры решения задач}
+
+\hfill \break
+\fbox{\textbf{Задача 1}}
+
+Найти производную $fx$
+
+\textbf{Решение:}
+
+
+\newpage
+
+\section{Список используемой литературы}
+
+\begin{enumerate}
+\item А.Ю.Петрович. Лекции по математическому анализу. Ч.1. Введение в математический анализ --- М.: Печатный салон ШАНС, 2017. --- 274 с.
+\item Кудрявцев Л.Д, Курс математического анализа. Т.1. --- М.: Высшая школа, 1981. --- 688 с.
+\item Никольский С.М. Курс математического анализа. Т.1. --- 4-е изд. --- М.: Наука, 1990. --- 528 с.
+\item Тер-Крикоров А.М., Шабунин М.И. Курс математического анализа. --- М.: Наука, 1988. --- 816 с.
+\item Яковлев Г.Н. Лекции по математическому анализу. Ч.1. --- М.: Физматлит, 2001. --- 400 с.
+\item Бесов О.В. Лекции по математическому анализу. --- М.: Физматлит, 2014. --- 480 с.
+\item Иванов Г.Е. Лекции по математическому анализу. Ч.1. --- М.: МФТИ, 2011. --- 318 с.
+\item Фихтенгольц Г.М, Курс дифференциального и интегрального исчисления. --- 7-у изд. --- М.: Наука, 1969. --- 608 с.
+\item Кудрявцев Л.Д., Кутасов А.Д., Чехлов В.И., Шабунин М.И. Сборник заадч по математическому анализу. Предел, непрерывность, дифференцируемость /под ред.  Л.Д.Кудрявцева. --- 2-е изд. --- М.: Физматлит, 2003. --- 496 с.
+\item Демидович Б.П. Сборник задач и упражнений по математическому анализу. --- 10-е изд. --- М.: Наука, 1990. --- 624 с.
+\end{enumerate}
+
+\end{document}

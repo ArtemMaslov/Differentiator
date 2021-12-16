@@ -3,12 +3,18 @@
 #include <time.h>
 #include <string>
 #include <assert.h>
+#include <direct.h>
+
 
 #include "Logs.h"
 
+
 int TextOffset = 0;
+size_t CreateGraphCallCount = 0;
 
 static FILE* logFile = nullptr;
+const char* GraphLogPath = GRAPH_LOG_FOLDER GRAPH_LOG_NAME;
+
 
 bool LogConstructor(const char* logFileName, const char* caption)
 {
@@ -22,6 +28,8 @@ bool LogConstructor(const char* logFileName, const char* caption)
         printf("Ошибка открытия файла с логами. FileName = \"%s\"", logFileName);
         return false;
     }
+
+    _mkdir(GRAPH_LOG_FOLDER);
 
     atexit(LogDestructor);
 
@@ -104,3 +112,28 @@ void LogLine(const char* message, int logLevel, bool dublicateToConsole)
     fflush(logFile);
 }
 
+void CreateHtmlGraphicLog(const char* imagesName)
+{
+    FILE* file = fopen(GRAPH_LOG_FOLDER "GraphicLog.html", "w");
+    if (!file)
+    {
+        puts("Ошибка открытия файла.");
+        return;
+    }
+
+    const char* pattern = "<html>\n"
+                          "<head><title>Лог программы \"Дифференциатор\".</title><style>font{line - height: 0.8; } body{background - color: #404040; } head{background - color: #404040; }</style></head>\n"
+                          "<body>\n"
+                          "<h1><font color = \"99B333\">Лог программы \"Дифференциатор\".</font></h1>\n";
+
+    const char* ending  = "</body>\n</html>";
+
+    fputs(pattern, file);
+
+    for (int st = 1; st <= CreateGraphCallCount; st++)
+        fprintf(file, "<img src = \"%s%d.png\">\n", imagesName, st);
+
+    fputs(ending, file);
+
+    fclose(file);
+}

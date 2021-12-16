@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 extern int TextOffset;
+extern size_t CreateGraphCallCount;
 
 enum LogLevel
 {
@@ -11,6 +12,11 @@ enum LogLevel
     LOG_WARNING = 1,
     LOG_ERROR = 2
 };
+
+#define GRAPH_LOG_FOLDER "GraphicLog\\"
+#define GRAPH_LOG_NAME "mathTreeGraph"
+
+extern const char* GraphLogPath;
 
 /**
  * @brief             Конструктор файла логов.
@@ -31,6 +37,8 @@ void LogDestructor();
  * @param dublicateToConsole Если true, то дублирует сообщения в консоль. По умолчанию false
 */
 void LogLine(const char* message, int logLevel, bool dublicateToConsole = false);
+
+void CreateHtmlGraphicLog(const char* imagesName);
 
 
 #endif // !LOGS_H_
