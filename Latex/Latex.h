@@ -23,6 +23,24 @@ extern const char* MathSentencesCommon1[];
 extern const char* MathSentencesCommon2[];
 extern const char* MathSentencesOperators[];
 
+struct ReplNode
+{
+    /// Содержит поддерево, которое было заменено
+    MathNode* replacedTree;
+    /// Узел, куда нужно будет вернуть поддерево
+    MathNode* treeRoot;
+};
+
+struct Replacements
+{
+    /// Размер массива nodes
+    size_t    size;
+    /// Индекс, куда нужно положить следующий заменённый узел
+    size_t    index;
+    /// Массив узлов, для которых была произведена замена переменной
+    ReplNode* nodes;
+};
+
 struct Latex
 {
     FILE*  file;
@@ -30,19 +48,18 @@ struct Latex
     size_t problemCounter = 1;
     size_t formulaCounter = 1;
     size_t formulaSkipCounter = 0;
-    MathNode** variableReplacement;
-    size_t variableReplacementSize;
+
+    Replacements repl;
 };
 
-#define LATEX_ARRAY(arr) arr, (sizeof((arr)) / sizeof((arr)[0]))
+const int ProbabilityMiss = 250; // ProbabilityMiss/1000
 
-const int ProbabilityMiss = 5; // 250/1000
+const int FormulasSkipCount = 3;
 
-const int FormulasSkipCount = 10;
-
-const size_t MaxNodesCount = 15;
+const size_t MaxNodesCount = 20;
 
 const size_t MaxNodesCountPerLine = 30;
+
 
 bool OpenLatexArticle(Latex* latex, const char* FileName);
 
@@ -61,6 +78,8 @@ void LatexRandSentence(Latex* latex, int sentenceType);
 void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer);
 
 void LatexMathFormula(Latex* latex, MathNode* lval, MathNode* rval);
+
+void PrintMathNodeLatex(MathNode* node, FILE* file);
 
 
 #endif

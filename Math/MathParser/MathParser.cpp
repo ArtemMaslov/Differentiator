@@ -4,6 +4,7 @@
 
 
 #include "MathParser.h"
+#include "..\..\Logs\Logs.h"
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
@@ -17,6 +18,9 @@ static void WriteTreeNodeToFile(MathNode* node, FILE* file, size_t recursiveLeng
 
 bool ParseMathTree(Text* text, MathTree* tree)
 {
+    assert(text);
+    assert(tree);
+
     char* ptr = text->buffer;
 
     if (!CheckCorrectInput(text))
@@ -108,6 +112,7 @@ bool ReadTreeFromFile(MathTree* tree, Text* text, FILE* file)
 {
     assert(tree);
     assert(file);
+    assert(text);
 
     TreeConstructor(tree);
 
@@ -122,6 +127,8 @@ bool ReadTreeFromFile(MathTree* tree, Text* text, FILE* file)
 
 static bool CheckCorrectInput(Text* text)
 {
+    assert(text);
+
     char*  ptr = text->buffer;
     size_t lBracketsCount = 0;
     size_t rBracketsCount = 0;
@@ -135,8 +142,8 @@ static bool CheckCorrectInput(Text* text)
 
         if (lBracketsCount < rBracketsCount)
         {
-            //puts("Ошибочная скобочная последовательность.\n"
-            //     "Количество закрывающих скобок '{' больше количества открывающих '}'");
+            LogLine("Ошибочная скобочная последовательность.\n"
+                    "Количество закрывающих скобок '{' больше количества открывающих '}'", LOG_ERROR, true);
             return false;
         }
 
@@ -148,6 +155,10 @@ static bool CheckCorrectInput(Text* text)
 
 static bool ParseTreeNodeValue(char** ptr, MathNode* node)
 {
+    assert(ptr);
+    assert(*ptr);
+    assert(node);
+
     *ptr = SkipSpaceSymbolsLeft(*ptr);
 
     char* string = *ptr;
@@ -161,7 +172,7 @@ static bool ParseTreeNodeValue(char** ptr, MathNode* node)
 
     if (!MathExpressionParseString(&node->expression, string, strLength))
     {
-        printf("Ошибка чтения узла \"%.*s\".", strLength, string);
+        LogLine("Ошибка чтения узла", LOG_ERROR, true);
         return false;
     }
     

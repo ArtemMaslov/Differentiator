@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Latex\Latex.cpp" />
+    <ClCompile Include="..\Latex\LatexReplacements.cpp" />
     <ClCompile Include="..\Logs\Logs.cpp" />
     <ClCompile Include="..\Math\MathExpression\MathExpression.cpp" />
     <ClCompile Include="..\Math\MathParser\MathParser.cpp" />
@@ -154,6 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Latex\Latex.h" />
+    <ClInclude Include="..\Latex\LatexReplacements.h" />
     <ClInclude Include="..\Latex\LatexTemplates.h" />
     <ClInclude Include="..\Logs\Logs.h" />
     <ClInclude Include="..\Math\MathExpression\MathDSL.h" />

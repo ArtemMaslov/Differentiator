@@ -35,7 +35,7 @@ enum MathOperator
     ME_SUBTRACTION    = 1,
     ME_MULTIPLICATION = 2,
     ME_DIVISION       = 3,
-    ME_POWER = 4,
+    ME_POWER          = 4,
 };
 
 const char MathOperatorNames[][2] =
@@ -101,7 +101,7 @@ enum MathExpressionType
 {
     ME_UNKNOWN  = -1,
     ME_NUMBER   = 0,
-    ME_CONSTANT    = 1,
+    ME_CONSTANT = 1,
     ME_VARIABLE = 2,
     ME_OPERATOR = 3,
     ME_FUNCTION = 4,
@@ -110,7 +110,7 @@ enum MathExpressionType
 struct MathExpression
 {
     union
-    {    
+    {
         double       me_number;
         MathOperator me_operator;
         char         me_variable;

@@ -6,7 +6,11 @@
 
 
 #include "LatexTemplates.h"
+#include "LatexReplacements.h"
 #include "Latex.h"
+#include "..\Logs\Logs.h"
+
+#include "..\Math\MathExpression\MathDSL.h"
 
 
 const char* MathSentencesCommon1[LATEX_COMMON1_SIZE] = 
@@ -37,35 +41,49 @@ const char* MathSentencesOperators[LATEX_OPERATOR_SIZE] =
     "Пользуясь формулами 4-6 из параграфа 5.1, 5 глава, 1 том Никольского \"Курс математического анализа.\" (стр 130) [3], получаем, что ",
 };
 
-static void PrintMathNodeLatex(MathNode* node, FILE* file);
-
-
-bool OpenLatexArticle(Latex* latex, const char* FileName)
+/**
+ * @brief          Открывает файл в формате .tex и записывает в него общую информацию:
+ *                 преамбулу, главную страницу, содержание, введение, теорию.
+ * @param latex    Указатель на структуру Latex.
+ * @param FileName Имя выходного файла без расширения.
+ * @return         false, если не удалось открыть файл.
+*/
+bool OpenLatexArticle(Latex* latex, const char* fileName)
 {
+    assert(latex);
+    assert(fileName);
+
     latex->file = fopen("article.tex", "w");
-    latex->fileName = FileName;
+    latex->fileName = fileName;
     latex->problemCounter = 1;
-    latex->variableReplacementSize = 15;
-    latex->variableReplacement = (MathNode**)calloc(latex->variableReplacementSize, sizeof(MathNode));
+    latex->repl.size = 15;
+    latex->repl.nodes = (ReplNode*)calloc(latex->repl.size, sizeof(ReplNode));
     srand(time(nullptr));
 
     if (!latex->file)
     {
-        printf("Ошибка открытия файла.");
+        LogLine("Ошибка открытия файла", LOG_ERROR, true);
         return false;
     }
     
     fputs(Preamble, latex->file);
     fputs(FirstPage, latex->file);
     //fputs(Contents, latex->file);
-    //fputs(Introduction, latex->file);
-    //fputs(Theory, latex->file);
+    fputs(Introduction, latex->file);
+    fputs(Theory, latex->file);
 
     return true;
 }
 
+/**
+ * @brief       Дописывает в конец файла список используемой литературы, закрывает его и компилирует документ.
+ *              в формат pdf.
+ * @param latex Указатель на структуру Latex.
+*/
 void CloseLatexArticle(Latex* latex)
 {
+    assert(latex);
+
     fputs(Literature, latex->file);
 
     char cmd[500] = "";
@@ -91,34 +109,65 @@ void CloseLatexArticle(Latex* latex)
     // Открытие
     sprintf(cmd, "%s.pdf", latex->fileName);
     system(cmd);
+
+    for (size_t st = 0; st < sizeof(pathes) / sizeof(pathes[0]); st++)
+    {
+        sprintf(cmd, "%s.%s", latex->fileName, pathes[st]);
+        remove(cmd);
+    }
 }
 
+/**
+ * @brief         Записывает новую задачу в файл.
+ * @param latex   Указатель на структуру Latex.
+ * @param problem Дерево, содержащее производную, которую нужно взять.
+*/
 void LatexMathProblem(Latex* latex, MathTree* problem)
 {
     if (!latex)
         return;
 
+    assert(problem);
+
     latex->formulaCounter = 1;
     latex->formulaSkipCounter = 0;
 
-    fputs(Problems, latex->file);
+    fprintf(latex->file, Problems, latex->problemCounter++);
 
     PrintMathNodeLatex(problem->root, latex->file);
     
     fputs(Solution, latex->file);
 }
 
+/**
+ * @brief         Записывает ответ на задачу.
+ * @param latex   Указатель на структуру Latex.
+ * @param problem Условие задачи (функция, которую нужно продифференцировать).
+ * @param answer  Ответ на задачу. (производная функции).
+*/
 void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer)
 {
     if (!latex)
         return;
+    
+    assert(problem);
+    assert(answer);
 
-    fputs("\n\n\\textbf{Ответ:} $", latex->file);
+    DoReplacement(answer->root, latex, true);
+    fputs("\n\n\\textbf{Ответ:} \n", latex->file);
+    
+    fputs("\\begin{equation}\n", latex->file);
     PrintMathNodeLatex(answer->root, latex->file);
-
-    fputs("$.", latex->file);
+    fputs("\n\\end{equation}\n\n", latex->file);
+    
+    PrintReplacedNodes(latex);
 }
 
+/**
+ * @brief              Записывает в файл случайную фразу из выбранных (sentenceType).
+ * @param latex        Указатель на структуру Latex
+ * @param sentenceType Код типов фраз, которые можно использовать (LatexTemplates.h)
+*/
 void LatexRandSentence(Latex* latex, int sentenceType)
 {
     if (!latex)
@@ -127,13 +176,15 @@ void LatexRandSentence(Latex* latex, int sentenceType)
     if (latex->formulaSkipCounter > 0)
     {
         latex->formulaSkipCounter--;
-        return;
+        if (latex->formulaSkipCounter > 0)
+            return;
     }
+
     // Делаем рандомные пропуски в формулах
     if (rand() % 1000 <= ProbabilityMiss)
     {
         latex->formulaSkipCounter = FormulasSkipCount - 1;
-        fputs("\nОпустим некоторые тривиальные рассуждения и перейдём к рассмотрению более значимых вопросов.\n", latex->file);
+        fputs("\n\nОпустим некоторые тривиальные рассуждения и перейдём к рассмотрению более значимых вопросов.\n\n", latex->file);
         return;
     }
     
@@ -176,6 +227,12 @@ void LatexRandSentence(Latex* latex, int sentenceType)
     }
 }
 
+/**
+ * @brief       Записывает в файл формулу в формате "(lval)` = rval".
+ * @param latex Указатель на структуру Latex.
+ * @param lval  Дифференцируемая функция.
+ * @param rval  Приозводная функции.
+*/
 void LatexMathDiffFormula(Latex* latex, MathNode* lval, MathNode* rval)
 {
     if (!latex || latex->formulaSkipCounter > 0)
@@ -183,72 +240,111 @@ void LatexMathDiffFormula(Latex* latex, MathNode* lval, MathNode* rval)
 
     assert(lval);
     assert(rval);
-
-    fputs("\\begin{equation}(", latex->file);
-
+    
+    DoReplacement(lval, latex, true);
+    fputs("\\begin{equation}\n(", latex->file);
     PrintMathNodeLatex(lval, latex->file);
 
+    DoReplacement(rval, latex);
     fputs(")^\\prime = ", latex->file);
     PrintMathNodeLatex(rval, latex->file);
     
     fprintf(latex->file, 
-            "\\label{eq:ref%zd}\n"
-            "\\end{equation}\n\n", latex->formulaCounter);
-
-    assert(lval);
+            "\n\\label{eq:ref%zd}\n"
+            "\\end{equation}", latex->formulaCounter++);
+        
+    PrintReplacedNodes(latex);
+    fflush(latex->file);
 }
 
+/**
+ * @brief       Записывает в файл формулу в формате "lval = rval".
+ * @param latex Указатель на структуру Latex
+ * @param lval  Функция слева от знака '='
+ * @param rval  Функция справа от знака '='
+*/
 void LatexMathFormula(Latex* latex, MathNode* lval, MathNode* rval)
 {
     if (!latex || latex->formulaSkipCounter > 0)
         return;
 
     assert(lval);
-
-    fputs("\\begin{equation}", latex->file);
-
+    //assert(rval);
+    
+    DoReplacement(lval, latex, true);
+    fputs("\\begin{equation}\n", latex->file);
     PrintMathNodeLatex(lval, latex->file);
 
     if (rval != nullptr)
     {
+        DoReplacement(rval, latex);
         fputs(" = ", latex->file);
         PrintMathNodeLatex(rval, latex->file);
     }
     fprintf(latex->file, 
-            "\\label{eq:ref%zd}\n"
-            "\\end{equation}\n\n", latex->formulaCounter);
-
-    assert(lval);
+            "\n\\label{eq:ref%zd}\n"
+            "\\end{equation}", latex->formulaCounter++);
+    
+    PrintReplacedNodes(latex);
+    fflush(latex->file);
 }
 
+/**
+ * @brief       Записывает в файл строку.
+ * @param latex Указатель на структуру Latex.
+ * @param str   Строка.
+*/
 void LatexString(Latex* latex, const char* str)
 {
     if (!latex || latex->formulaSkipCounter > 0)
         return;
 
+    assert(str);
+
     fputs(str, latex->file);
     fputs("\n\n", latex->file);
+    fflush(latex->file);
 }
 
+/**
+ * @brief        Записывает в файл отформатированную строку.
+ * @param latex  Указатель на структуру Latex.
+ * @param format Формат строки (как в printf).
+ * @param        Аргументы (как в printf).
+*/
 void LatexFormatedString(Latex* latex, const char* format, ...)
 {
     if (!latex || latex->formulaSkipCounter > 0)
         return;
 
+    assert(format);
+
     va_list args;
 	va_start(args, format);
     vfprintf(latex->file, format, args);
     va_end(args);
+    fflush(latex->file);
 }
 
-static void PrintMathNodeLatex(MathNode* node, FILE* file)
+/**
+ * @brief      Записывает поддерево в файл.
+ * @param node Указатель на корень поддерева.
+ * @param file Файл.
+*/
+void PrintMathNodeLatex(MathNode* node, FILE* file)
 {
+    assert(node);
+    assert(file);
+
     switch (node->expression.type)
     {
         case ME_NUMBER:
+        {
             fprintf(file, "%lg", node->expression.me_number);
             break;
+        }
         case ME_CONSTANT:
+        {
             switch (node->expression.me_constant)
             {
                 case ME_PI:
@@ -259,10 +355,14 @@ static void PrintMathNodeLatex(MathNode* node, FILE* file)
                     break;
             }
             break;
+        }
         case ME_VARIABLE:
+        {
             fputc(node->expression.me_variable, file);
             break;
+        }
         case ME_FUNCTION:
+        {
             switch (node->expression.me_function)
             {
                 case ME_SIN:
@@ -305,26 +405,55 @@ static void PrintMathNodeLatex(MathNode* node, FILE* file)
                     fputs("\\frac{\\pi}{2} - \\arctan{", file);
                     break;
             }
+
+            bool parenthesesNeed = !(
+                GET_FUNC(node) == ME_SQRT            ||
+                GET_FUNC(node) == ME_CBRT            ||
+                TYPE_EQUAL(RIGHT, ME_NUMBER)         || 
+                TYPE_EQUAL(RIGHT, ME_CONSTANT)       ||
+                TYPE_EQUAL(RIGHT, ME_VARIABLE)       ||
+                TYPE_EQUAL(RIGHT, ME_OPERATOR)       &&
+                GET_OPER(RIGHT) != ME_MULTIPLICATION &&
+                GET_OPER(RIGHT) != ME_DIVISION);
+
+            if (parenthesesNeed)
+                fputc('(', file);
             PrintMathNodeLatex(node->nodeRight, file);
+            if (parenthesesNeed)
+                fputc(')', file);
             fputc('}', file);
             break;
+    }
         case ME_OPERATOR:
+        {
             switch (node->expression.me_operator)
             {
-                case ME_SUBTRACTION:
-                    fputc('(', file);
-                    PrintMathNodeLatex(node->nodeLeft, file);
-                    fputs(" - ", file);
-                    PrintMathNodeLatex(node->nodeRight, file);
-                    fputc(')', file);
-                    break;
                 case ME_ADDITION:
-                    fputc('(', file);
+                case ME_SUBTRACTION:
+                {
+                    bool parenthesesNeed = !(
+                        node->parent && 
+                        ((GET_TYPE(node->parent, ME_OPERATOR) && GET_OPER(node->parent) == ME_DIVISION) ||
+                         (GET_TYPE(node->parent, ME_FUNCTION) && 
+                          (GET_FUNC(node->parent) == ME_SQRT || GET_FUNC(node->parent) == ME_CBRT))
+                        ));
+
+                    if (parenthesesNeed)
+                        fputc('(', file);
+
                     PrintMathNodeLatex(node->nodeLeft, file);
-                    fputs(" + ", file);
+
+                    if (GET_OPER(node) == ME_SUBTRACTION)
+                        fputs(" - ", file);
+                    else
+                        fputs(" + ", file);
+
                     PrintMathNodeLatex(node->nodeRight, file);
-                    fputc(')', file);
+
+                    if (parenthesesNeed)
+                        fputc(')', file);
                     break;
+                }
                 case ME_MULTIPLICATION:
                     PrintMathNodeLatex(node->nodeLeft, file);
                     fputs(" \\cdot ", file);
@@ -338,23 +467,29 @@ static void PrintMathNodeLatex(MathNode* node, FILE* file)
                     fputc('}', file);
                     break;
                 case ME_POWER:
-                    fputc('(', file);
+                {
+                    bool parenthesesNeed = !(
+                        TYPE_EQUAL(LEFT, ME_NUMBER)          || 
+                        TYPE_EQUAL(LEFT, ME_CONSTANT)        ||
+                        TYPE_EQUAL(LEFT, ME_VARIABLE)        ||
+                        TYPE_EQUAL(LEFT, ME_OPERATOR)        &&
+                        GET_OPER(RIGHT) != ME_MULTIPLICATION &&
+                        GET_OPER(RIGHT) != ME_DIVISION);
+
+                    if (parenthesesNeed)
+                        fputc('(', file);
                     PrintMathNodeLatex(node->nodeLeft, file);
-                    fputs(")^{", file);
+                    if (parenthesesNeed)
+                        fputc(')', file);
+                    fputs("^{", file);
                     PrintMathNodeLatex(node->nodeRight, file);
                     fputc('}', file);
                     break;
+                }
             }
             break;
+        }
     }
 }
 
-static void DoReplacement(MathNode* node, Latex* latex)
-{
-    if (node->nodeLeft)
-        DoReplacement(node->nodeLeft, latex);
-    if (node->nodeRight)
-        DoReplacement(node->nodeRight, latex);
-
-
-}
+#include "..\Math\MathExpression\UndefMathDSL.h"

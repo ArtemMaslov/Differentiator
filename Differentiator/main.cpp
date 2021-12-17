@@ -20,53 +20,46 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    size_t problemCount = 6;
     FILE* file = nullptr;
-    const char* fileName = nullptr;
-    if (argc > 1)
-    {
-        fileName = argv[1];
-        file = fopen(fileName, "r");
-    }
-    else
-    {
-        fileName = "diffTask2.txt";
-        file = fopen(fileName, "r");
-    }
-
-    if (!file)
-    {
-        printf("Ошибка открытия файла \"%s\"", fileName);
-        return 1;
-    }
-
-    Differentiator diff = {};
-    DifferentiatorConstructor(&diff, file);
-    fclose(file);
-
+    char fileName[50] = "";
+    
     Latex latex = {};
     if (!OpenLatexArticle(&latex, "article"))
     {
         puts("Ошибка открытия файла");
         return false;
     }
-    
-    LatexMathProblem(&latex, &diff.problem);
 
-    if (!Differentiate(&diff, 'x', &latex))
+    for (size_t st = 2; st < problemCount; st++)
     {
-        puts("Ошибка дифференцирования");
-        return false;
-    }
-    CreateHtmlGraphicLog(GRAPH_LOG_NAME);
+        sprintf(fileName, "diffTask%d.txt", st);
+        file = fopen(fileName, "r");
 
-    LatexMathProblemAnswer(&latex, &diff.problem, &diff.answer);
+        if (!file)
+        {
+            printf("Ошибка открытия файла \"%s\"", fileName);
+            continue;
+        }
+
+        Differentiator diff = {};
+        DifferentiatorConstructor(&diff, file);
+        fclose(file);
+            
+        LatexMathProblem(&latex, &diff.problem);
+
+        if (!Differentiate(&diff, 'x', &latex))
+        {
+            puts("Ошибка дифференцирования");
+            return false;
+        }
+        CreateHtmlGraphicLog(GRAPH_LOG_NAME);
+
+        LatexMathProblemAnswer(&latex, &diff.problem, &diff.answer);
+
+        DifferentiatorDestructor(&diff);
+    }
     CloseLatexArticle(&latex);
-    //MathTreeOptimize(&diff.diffTree);
-    
-    //if (diff.diffTree.root)
-    //    CreateTreeGraph("optimizedDiffTask.png", &diff.diffTree);
-    
-    DifferentiatorDestructor(&diff);
 
     return 0;
 }

@@ -12,7 +12,7 @@
 #define GET_TYPE(node) (node)->expression.type
 #define TYPE_EQUAL(node, type) (GET_TYPE(node) == type)
 #define GET_NUM(node) (node)->expression.me_number
-#define GET_OPER(node) (node)->expression.me_operation
+#define GET_OPER(node) (node)->expression.me_operator
 #define GET_FUNC(node) (node)->expression.me_function
 #define GET_CONST(node) (node)->expression.me_constant
 #define GET_VAR(node) (node)->expression.me_variable

@@ -51,7 +51,7 @@ bool LogConstructor(const char* logFileName, const char* caption)
     TextOffset = ftell(logFile);
 
     fputs("</body>\n"
-            "</html>\n", logFile);
+          "</html>\n", logFile);
     TextOffset -= ftell(logFile);
     free(date);
     return true;
@@ -114,6 +114,8 @@ void LogLine(const char* message, int logLevel, bool dublicateToConsole)
 
 void CreateHtmlGraphicLog(const char* imagesName)
 {
+    assert(imagesName);
+
     FILE* file = fopen(GRAPH_LOG_FOLDER "GraphicLog.html", "w");
     if (!file)
     {

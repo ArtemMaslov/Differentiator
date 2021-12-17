@@ -5,6 +5,8 @@
 
 char* SkipSpaceSymbolsLeft(char* ptr)
 {
+    assert(ptr);
+
     while (*ptr && isspace((unsigned char)*ptr))
         ptr++;
     return ptr;
@@ -12,6 +14,8 @@ char* SkipSpaceSymbolsLeft(char* ptr)
 
 size_t SkipSpaceSymbolsRight(char* ptr, size_t strLength)
 {
+    assert(ptr);
+
     while (strLength > 0 && isspace((unsigned char)ptr[strLength - 1]))
         strLength--;
     return strLength;
@@ -19,6 +23,8 @@ size_t SkipSpaceSymbolsRight(char* ptr, size_t strLength)
 
 bool SkipInputString(const char* ptr, size_t count)
 {
+    assert(ptr);
+
     while (*ptr && count)
     {
         if (!isspace(*ptr))

@@ -26,6 +26,8 @@ struct MathNode
     MathNode* nodeLeft;
     /// Правый потомок.
     MathNode* nodeRight;
+    /// Количество потомков у поддерева
+    size_t    childCount;
 };
 
 struct MathTree

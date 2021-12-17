@@ -5,6 +5,7 @@
 
 #include "MathExpression.h"
 #include "..\..\StdParser\StdParser.h"
+#include "..\..\Logs\Logs.h"
 
 
 static int CheckStrForMathExpressionType(const char* ptr, const char* meStrings,
@@ -19,7 +20,7 @@ bool MathExpressionParseString(MathExpression* expr, const char* ptr, const size
     assert(ptr);
 
     int exprType = ME_UNKNOWN;
-    expr->type = ME_UNKNOWN;
+    expr->type   = ME_UNKNOWN;
     
     // Операторы
     if ((exprType = CheckStrForMathExpressionType(ptr, MathOperatorNames[0],
@@ -116,6 +117,7 @@ bool MathExpressionEqual(MathExpression* expr1, MathExpression* expr2)
                 return true;
             break;
         default:
+            LogLine("Неопознанный тип математического выражения.", LOG_ERROR, true);
             break;
     }
     return false;
@@ -144,7 +146,7 @@ void PrintMathExpression(MathExpression* expr, FILE* file)
             fputs(MathFunctionNames[expr->me_function], file);
             break;
         default:
-            fputs("UNKNOWN", file);
+            LogLine("Неизвестный тип математического выражения.", LOG_ERROR, true);
             break;
     }
 }

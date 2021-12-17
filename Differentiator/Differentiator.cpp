@@ -7,13 +7,19 @@
 #include "..\Math\MathTree\MathTree.h"
 #include "..\Math\MathParser\MathParser.h"
 #include "..\Logs\Logs.h"
+#include "..\Latex\LatexReplacements.h"
 
 
 static MathNode* DifferentiateNode(MathNode* nodeSrc, char diffVar, Latex* latex);
 
+static void DiffTreeOptimize(MathNode* problem, Latex* latex);
+
 
 bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile)
 {
+    assert(diff);
+    assert(inputFile);
+
     if (!ReadTreeFromFile(&diff->problem, &diff->text, inputFile))
         return false;
 
@@ -22,6 +28,8 @@ bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile)
 
 void DifferentiatorDestructor(Differentiator* diff)
 {
+    assert(diff);
+
     TreeDestructor(&diff->problem);
 
     TextDestructor(&diff->text);
@@ -29,6 +37,9 @@ void DifferentiatorDestructor(Differentiator* diff)
 
 bool Differentiate(Differentiator* diff, char diffVar, Latex* latex)
 {
+    assert(diff);
+    assert(latex);
+
     diff->answer.root = DifferentiateNode(diff->problem.root, diffVar, latex);
     if (diff->answer.root == nullptr)
         return false;
@@ -51,8 +62,9 @@ bool Differentiate(Differentiator* diff, char diffVar, Latex* latex)
 static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
 {
     assert(node);
-    CreateTreeGraph(GraphLogPath, node, false);
     //assert(latex);
+    
+    //CreateTreeGraph(GraphLogPath, node, false);
     MathNode* result = nullptr;
 
     switch (node->expression.type)
@@ -175,7 +187,7 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
                     if (TYPE_EQUAL(RIGHT, ME_CONSTANT) ||
                         TYPE_EQUAL(RIGHT, ME_NUMBER))
                     {
-                        result = MUL( NUM(GET_NUM(RIGHT)), POW( COPY(LEFT), SUB(NUM(GET_NUM(RIGHT)), NUM(1)) ) );
+                        result = MUL(MUL( NUM(GET_NUM(RIGHT)), POW( COPY(LEFT), SUB(NUM(GET_NUM(RIGHT)), NUM(1)) ) ), DIF(LEFT) );
                         LatexRandSentence(latex, LATEX_COMMON2);
                         LatexString(latex, "производная степенной функции вычисляется легко по формуле: $(x^n)^\\prime = n \\cdot x^{n-1}$");
                     }
@@ -183,7 +195,7 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
                     {
                         result = MUL(COPY(F), 
                             ADD( 
-                            MUL( DIV(RIGHT, LEFT), DIF(LEFT) ), 
+                            MUL( DIV(COPY(RIGHT), COPY(LEFT)), DIF(LEFT) ), 
                             MUL( FUNC(ME_LN, COPY(LEFT)), DIF(RIGHT) )
                             ) );
                         LatexRandSentence(latex, LATEX_COMMON2);
@@ -196,7 +208,38 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
     if (result)
         LatexMathDiffFormula(latex, node, result);
 
+    DiffTreeOptimize(result, latex);
+
     return result;
+}
+
+static void DiffTreeOptimize(MathNode* problem, Latex* latex)
+{
+    assert(problem);
+    assert(latex);
+
+    MathNode* copy = nullptr;
+    bool result = false;
+    do
+    { 
+        result = false;
+        copy = TreeCopyRecursive(problem);
+        while (MathTreeOptimizeCalculatedNodes(problem))
+            result = true;
+        while (OptimizeWorthlessNodes(problem))
+            result = true;
+        while (OptimizeWorthlessTrees(problem))
+            result = true;
+        if (result)
+        {
+            LatexString(latex, "\nПриведем подобные слагаемые.");
+            LatexMathFormula(latex, copy, problem);
+        }
+        TreeNodeDestructor(copy);
+    }
+    while (result);
+
+    fflush(latex->file);
 }
 
 #undef DIF
