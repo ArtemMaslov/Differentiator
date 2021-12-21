@@ -81,6 +81,9 @@
     <ClCompile Include="..\Latex\LatexReplacements.cpp">
       <Filter>Latex</Filter>
     </ClCompile>
+    <ClCompile Include="..\Math\MathTree\MathTreeOptimizations.cpp">
+      <Filter>Math\MathTree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\StackLibrary\Stack.h">
@@ -127,6 +130,12 @@
     </ClInclude>
     <ClInclude Include="..\Latex\LatexReplacements.h">
       <Filter>Latex</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\MathTree\MathTreeOptimizations.h">
+      <Filter>Math\MathTree</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Math\MathTree\MathTreeGeneral.h">
+      <Filter>Math\MathTree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

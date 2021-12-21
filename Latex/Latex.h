@@ -56,7 +56,7 @@ const int ProbabilityMiss = 250; // ProbabilityMiss/1000
 
 const int FormulasSkipCount = 3;
 
-const size_t MaxNodesCount = 20;
+const size_t MaxNodesCount = 15;
 
 const size_t MaxNodesCountPerLine = 30;
 

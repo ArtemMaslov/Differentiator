@@ -11,8 +11,6 @@
 
 static bool AddNodeToLatexVariables(MathNode* node, Latex* latex);
 
-static void ChangeNodeToVariable(Latex* latex, MathNode* node, char symbol);
-
 static bool DoNodeReplacement(MathNode* node, Latex* latex);
 
 static void DoNodeReverseRaplacement(Latex* latex);
@@ -109,7 +107,7 @@ static bool DoNodeReplacement(MathNode* node, Latex* latex)
         if (node->nodeRight)
             node->childCount += node->nodeRight->childCount;
     }
-    if (node->expression.type == ME_OPERATOR && node->childCount > MaxNodesCount && node->parent)
+    if (node->expression.type == ME_OPERATOR && node->childCount > MaxNodesCount)// && node->parent
     {
         if (!AddNodeToLatexVariables(node, latex))
             return false;
@@ -117,22 +115,6 @@ static bool DoNodeReplacement(MathNode* node, Latex* latex)
     }
 
     return replaced;
-}
-
-/**
- * @brief       »змен€ет тип узла на переменную и присвает букву, начина€ с 'A'.
- * @param node  ”казатель на поддерево.
- * @param latex ”казатель на структуру Latex.
-*/
-static void ChangeNodeToVariable(Latex* latex, MathNode* node, char symbol)
-{
-    assert(latex);
-    assert(node);
-
-    node->expression.me_variable = symbol;
-    node->expression.type = ME_VARIABLE;
-    node->childCount = 1;
-    node->nodeLeft = node->nodeRight = nullptr;
 }
 
 /**
@@ -170,6 +152,10 @@ static bool AddNodeToLatexVariables(MathNode* node, Latex* latex)
     memcpy(newNode, node, sizeof(MathNode));
     newNode->parent = nullptr;
 
-    ChangeNodeToVariable(latex, node, 'A' + latex->repl.index - 1);
+    node->expression.me_variable = 'A' + latex->repl.index - 1;
+    node->expression.type = ME_VARIABLE;
+    node->childCount = 1;
+    node->nodeLeft = node->nodeRight = nullptr;
+
     return true;
 }

@@ -95,7 +95,7 @@ enum StackError
 
 /// @brief Минимальный допустимый размер стека.
 /// Стек может содержать массив данных либо нулевой длины, либо не меньшей STACK_MIN_CAPACITY.
-#define STACK_MIN_CAPACITY 32
+const size_t STACK_MIN_CAPACITY = 32;
 /// @brief Коэффициент расширения/сужения размера стека. Должен быть больше 1.
 /// При увеличении коэффициента, уменьшается количество выделений памяти.
 /// При уменьшении коэффициента, стек будет занимать меньше памяти.
@@ -104,11 +104,11 @@ enum StackError
 /// newStackCapacity = min ( oldCapacity * (0.5 - STACK_CAPACITY_DECREASE_COEFFICIENT) ; abs(oldCapacity / 2.0 - STACK_MIN_CAPACITY) )
 /// При этом, если в стеке есть элементы, то вместимость стека не может стать меньше STACK_MIN_CAPACITY.
 /// Если stackSize == 0, то вместимость стека устанавливается равной 0.
-#define STACK_CAPACITY_SCALE_COEFFICIENT 2
+const size_t STACK_CAPACITY_SCALE_COEFFICIENT = 2;
 /// @brief Коэффициент уменьшения вместимости стека. Должен быть не меньше 0, не больше 0.5.
 /// При увеличении коэффициента, уменьшается количество выделений памяти.
 /// При уменьшении коэффициента, стек будет занимать меньше памяти.
-#define STACK_CAPACITY_DECREASE_COEFFICIENT 0.1
+const double STACK_CAPACITY_DECREASE_COEFFICIENT = 0.1;
 /// @brief Значение левой канарейки для стека и массива данных.
 #define STACK_LEFT_CANARY_VALUE 0xBAD0AAAAAAAA0BAD
 /// @brief Значение правой канарейки для стека и массива данных.

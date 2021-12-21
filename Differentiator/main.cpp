@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    size_t problemCount = 6;
+    size_t problemCount = 8;
     FILE* file = nullptr;
     char fileName[50] = "";
     
@@ -31,7 +31,7 @@ int main(int argc, char* argv[])
         return false;
     }
 
-    for (size_t st = 2; st < problemCount; st++)
+    for (size_t st = 0; st < problemCount; st++)
     {
         sprintf(fileName, "diffTask%d.txt", st);
         file = fopen(fileName, "r");

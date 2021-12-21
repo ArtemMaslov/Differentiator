@@ -95,8 +95,8 @@ void CloseLatexArticle(Latex* latex)
     {
         "aux",
         "log",
-        "pdf",
-        "toc"
+        "toc",
+        "pdf"
     };
     for (size_t st = 0; st < sizeof(pathes) / sizeof(pathes[0]); st++)
     {
@@ -110,7 +110,8 @@ void CloseLatexArticle(Latex* latex)
     sprintf(cmd, "%s.pdf", latex->fileName);
     system(cmd);
 
-    for (size_t st = 0; st < sizeof(pathes) / sizeof(pathes[0]); st++)
+    // -1, потому что pdf удалять не надо!
+    for (size_t st = 0; st < sizeof(pathes) / sizeof(pathes[0]) - 1; st++)
     {
         sprintf(cmd, "%s.%s", latex->fileName, pathes[st]);
         remove(cmd);

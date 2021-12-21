@@ -94,49 +94,67 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
             {
                 case ME_SIN:
                     result = COMPLEX_FUNC(FUNC(ME_COS, COPY(X)), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная синуса равна $(\\sin{x})^\\prime = \\cos{x}$.");
                     break;
+
                 case ME_COS:
                     result = COMPLEX_FUNC(FUNC(ME_SIN, COPY(X)), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная косинуса равна $(\\cos{x})^\\prime = -\\sin{x}$.");
                     break;
+
                 case ME_TG:
                     result = COMPLEX_FUNC(DIV( NUM(1), POW2(FUNC(ME_COS, COPY(X))) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная тангенса равна $(\\tan{x})^\\prime = \\frac{1}{(\\cos{x})^2}$.");
                     break;
+
                 case ME_CTG:
                     result = COMPLEX_FUNC(DIV( NUM(-1), POW2(FUNC(ME_SIN, COPY(X))) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная котангенса равна $(\\cot{x})^\\prime = \\frac{1}{(\\sin{x})^2}$.");
                     break;
+
                 case ME_SH:
                     result = COMPLEX_FUNC(FUNC(ME_CH, COPY(X)), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная гиперболического синуса равна $(\\sinh{x})^\\prime = \\cosh{x}$.");
                     break;
+
                 case ME_CH:
                     result = COMPLEX_FUNC(FUNC(ME_SH, COPY(X)), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная гиперболического косинуса равна $(\\cosh{x})^\\prime = \\sinh{x}$.");
                     break;
+
                 case ME_LN:
                     result = COMPLEX_FUNC(DIV( NUM(1), COPY(X) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная натурального логарифма равна $(\\ln{x})^\\prime = \\frac{1}{x}$.");
                     break;
+
                 case ME_SQRT:
                     result = COMPLEX_FUNC(DIV( NUM(1), MUL(NUM(2), COPY(F)) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная корня вычисляется по формуле $(\\sqrt{x})^\\prime = \\frac{1}{2\\sqrt{x}}$.");
                     break;
+
                 case ME_CBRT:
                     result = COMPLEX_FUNC(DIV( NUM(1), MUL( NUM(3), POW2(COPY(F)) ) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная кубического корня легко берется. Достаточно лишь представить кубический корень в виде степени с рациональным показателем.");
                     break;
+
                 case ME_ARCSIN:
                     result = COMPLEX_FUNC(DIV( NUM(1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);

@@ -145,6 +145,7 @@
     <ClCompile Include="..\Math\MathExpression\MathExpression.cpp" />
     <ClCompile Include="..\Math\MathParser\MathParser.cpp" />
     <ClCompile Include="..\Math\MathTree\MathTree.cpp" />
+    <ClCompile Include="..\Math\MathTree\MathTreeOptimizations.cpp" />
     <ClCompile Include="..\StackLibrary\Stack.cpp" />
     <ClCompile Include="..\StackLibrary\StackDiagnostic.cpp" />
     <ClCompile Include="..\StackLibrary\StackProtection.cpp" />
@@ -163,6 +164,8 @@
     <ClInclude Include="..\Math\MathExpression\UndefMathDSL.h" />
     <ClInclude Include="..\Math\MathParser\MathParser.h" />
     <ClInclude Include="..\Math\MathTree\MathTree.h" />
+    <ClInclude Include="..\Math\MathTree\MathTreeGeneral.h" />
+    <ClInclude Include="..\Math\MathTree\MathTreeOptimizations.h" />
     <ClInclude Include="..\StackLibrary\Stack.h" />
     <ClInclude Include="..\StackLibrary\StackDiagnostic.h" />
     <ClInclude Include="..\StackLibrary\StackProtection.h" />
