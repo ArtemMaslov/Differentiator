@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
         }
         CreateHtmlGraphicLog(GRAPH_LOG_NAME);
 
-        LatexMathProblemAnswer(&latex, &diff.problem, &diff.answer);
+        LatexMathProblemAnswer(&latex, &diff.answer);
 
         DifferentiatorDestructor(&diff);
     }

@@ -36,7 +36,7 @@ struct MathTreeOptimizer
     size_t     rightSize;
 };
 
-static MathNode* FindEqualTrees(MathNode* node, MathNode* firstTree, MathOperator oper);
+static MathNode* FindEqualTrees(MathNode* node, const MathNode* firstTree, const MathOperator oper);
 
 static bool OptimizerConstructor(MathTreeOptimizer* optimizer);
 
@@ -54,7 +54,7 @@ static bool AddLeftTreeToOptimizer(MathNode* node, MathTreeOptimizer* optimizer)
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
 
-static void OptimizeNodeToNumber(MathNode* node, double number)
+static void OptimizeNodeToNumber(MathNode* node, const double number)
 {
     assert(node);
 
@@ -294,13 +294,16 @@ bool OptimizeWorthlessTrees(MathNode* node)
                     node->expression.me_operator = ME_MULTIPLICATION;
                     OptimizeNodeToNumber(LEFT, 2);
                     break;
+
                 case ME_SUBTRACTION:
                     OptimizeNodeToNumber(node, 0);
                     break;
+
                 case ME_MULTIPLICATION:
                     node->expression.me_operator = ME_POWER;
                     OptimizeNodeToNumber(RIGHT, 2);
                     break;
+
                 case ME_DIVISION:
                     OptimizeNodeToNumber(node, 1);
                     break;
@@ -311,7 +314,7 @@ bool OptimizeWorthlessTrees(MathNode* node)
     return result;
 }
 
-static MathNode* FindEqualTrees(MathNode* node, MathNode* firstTree, MathOperator oper)
+static MathNode* FindEqualTrees(MathNode* node, const MathNode* firstTree, const MathOperator oper)
 {
     MathNode* secondTree = nullptr;
 

@@ -28,41 +28,41 @@ void TreeAddLeftNode(MathNode* parent, MathNode* child);
 
 size_t TreeMeasure(MathNode* node);
 
-MathNode* TreeCopyRecursive(MathNode* nodeSrc);
+MathNode* TreeCopyRecursive(const MathNode* nodeSrc);
 
-bool IsLeaf(MathNode* node);
+bool IsLeaf(const MathNode* node);
 
-bool CompareTrees(MathNode* node1, MathNode* node2);
+bool CompareTrees(const MathNode* node1, const MathNode* node2);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-MathNode* TreeFindObject(MathNode* node, MathExpression object);
+MathNode* TreeFindObject(MathNode* node, const MathExpression object);
 
-MathNode* TreeFindObjectStack(MathNode* node, MathExpression object, Stack* stk);
+MathNode* TreeFindObjectStack(MathNode* node, const MathExpression object, Stack* stk);
 
-MathNode* GetNodeFromStack(Stack* stk, size_t index);
+MathNode* GetNodeFromStack(const Stack* stk, const size_t index);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
 bool TreeFindVariables(MathTree* problem);
 
-bool TreeFindVariable(MathTree* problem, char variable);
+bool TreeFindVariable(const MathTree* problem, const char variable);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-double TreeCalculate(MathTree* problem);
+double TreeCalculate(const MathTree* problem);
 
-double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate);
+double CalculateNode(const MathNode* node, const MathTree* problem, bool* canCalculate);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
 #ifdef GRAPHVIZ
 
-bool CreateTreeGraph(const char* outImagefileName, MathNode* node, bool openFile = false);
+bool CreateTreeGraph(const char* outImagefileName, const MathNode* node, const bool openFile = false);
 
 #else
 

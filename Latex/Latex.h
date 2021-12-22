@@ -25,19 +25,19 @@ extern const char* MathSentencesOperators[];
 
 struct ReplNode
 {
-    /// Содержит поддерево, которое было заменено
+    /// РЎРѕРґРµСЂР¶РёС‚ РїРѕРґРґРµСЂРµРІРѕ, РєРѕС‚РѕСЂРѕРµ Р±С‹Р»Рѕ Р·Р°РјРµРЅРµРЅРѕ
     MathNode* replacedTree;
-    /// Узел, куда нужно будет вернуть поддерево
+    /// РЈР·РµР», РєСѓРґР° РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ РІРµСЂРЅСѓС‚СЊ РїРѕРґРґРµСЂРµРІРѕ
     MathNode* treeRoot;
 };
 
 struct Replacements
 {
-    /// Размер массива nodes
+    /// Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° nodes
     size_t    size;
-    /// Индекс, куда нужно положить следующий заменённый узел
+    /// РРЅРґРµРєСЃ, РєСѓРґР° РЅСѓР¶РЅРѕ РїРѕР»РѕР¶РёС‚СЊ СЃР»РµРґСѓСЋС‰РёР№ Р·Р°РјРµРЅС‘РЅРЅС‹Р№ СѓР·РµР»
     size_t    index;
-    /// Массив узлов, для которых была произведена замена переменной
+    /// РњР°СЃСЃРёРІ СѓР·Р»РѕРІ, РґР»СЏ РєРѕС‚РѕСЂС‹С… Р±С‹Р»Р° РїСЂРѕРёР·РІРµРґРµРЅР° Р·Р°РјРµРЅР° РїРµСЂРµРјРµРЅРЅРѕР№
     ReplNode* nodes;
 };
 
@@ -61,25 +61,25 @@ const size_t MaxNodesCount = 15;
 const size_t MaxNodesCountPerLine = 30;
 
 
-bool OpenLatexArticle(Latex* latex, const char* FileName);
+bool OpenLatexArticle(Latex* latex, const char* fileName);
 
 void CloseLatexArticle(Latex* latex);
 
-void LatexMathProblem(Latex* latex, MathTree* problem);
+void LatexMathProblem(Latex* latex, const MathTree* problem);
 
-void LatexFormatedString(Latex* latex, const char* format, ...);
+void LatexFormatedString(const Latex* latex, const char* format, ...);
 
-void LatexString(Latex* latex, const char* str);
+void LatexString(const Latex* latex, const char* str);
 
 void LatexMathDiffFormula(Latex* latex, MathNode* lval, MathNode* rval);
 
-void LatexRandSentence(Latex* latex, int sentenceType);
+void LatexRandSentence(Latex* latex, const int sentenceType);
 
-void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer);
+void LatexMathProblemAnswer(Latex* latex, MathTree* answer);
 
 void LatexMathFormula(Latex* latex, MathNode* lval, MathNode* rval);
 
-void PrintMathNodeLatex(MathNode* node, FILE* file);
+void PrintMathNodeLatex(const MathNode* node, FILE* file);
 
 
 #endif

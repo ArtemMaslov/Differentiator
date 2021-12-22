@@ -19,7 +19,7 @@ bool DifferentiatorConstructor(Differentiator* diff, FILE* inputFile);
 
 void DifferentiatorDestructor(Differentiator* diff);
 
-bool Differentiate(Differentiator* diff, char diffVar, Latex* latex);
+bool Differentiate(Differentiator* diff, const char diffVar, Latex* latex);
 
 
 #endif

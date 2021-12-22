@@ -15,11 +15,11 @@
 #define CALC(node) CalculateNode(node, problem, canCalculate)
 
 
-static bool TreeNodeFindVariables(MathNode* node, MathTree* problem);
+static bool TreeNodeFindVariables(const MathNode* node, MathTree* problem);
 
-static bool TreeAddVariable(MathTree* problem, char variable);
+static bool TreeAddVariable(MathTree* problem, const char variable);
 
-static void OptimizeNodeToNumber(MathNode* node, double number);
+static void OptimizeNodeToNumber(MathNode* node, const double number);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
@@ -149,7 +149,7 @@ size_t TreeMeasure(MathNode* node)
  * @param nodeParentDst Указатель, куда надо скопировать дерево.
  * @return              false в случае ошибки, true в случае успеха.
 */
-MathNode* TreeCopyRecursive(MathNode* nodeSrc)
+MathNode* TreeCopyRecursive(const MathNode* nodeSrc)
 {
     assert(nodeSrc);
 
@@ -180,7 +180,7 @@ MathNode* TreeCopyRecursive(MathNode* nodeSrc)
 
 #undef CHECK_NODE
 
-bool IsLeaf(MathNode* node)
+bool IsLeaf(const MathNode* node)
 {
     assert(node);
 
@@ -196,7 +196,7 @@ bool IsLeaf(MathNode* node)
  * @param node2 Второе поддерево.
  * @return      true, если поддеревья равны.
 */
-bool CompareTrees(MathNode* node1, MathNode* node2)
+bool CompareTrees(const MathNode* node1, const MathNode* node2)
 {
     assert(node1);
     assert(node2);
@@ -225,7 +225,7 @@ bool CompareTrees(MathNode* node1, MathNode* node2)
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-MathNode* TreeFindObject(MathNode* node, MathExpression object)
+MathNode* TreeFindObject(MathNode* node, const MathExpression object)
 {
     LogLine("Вызван TreeFindObject()", LOG_DEBUG);
     assert(node);
@@ -245,7 +245,7 @@ MathNode* TreeFindObject(MathNode* node, MathExpression object)
     return result;
 }
 
-MathNode* TreeFindObjectStack(MathNode* node, MathExpression object, Stack* stk)
+MathNode* TreeFindObjectStack(MathNode* node, const MathExpression object, Stack* stk)
 {
     LogLine("Вызван TreeFindObjectStack()", LOG_DEBUG);
     assert(stk);
@@ -270,7 +270,7 @@ MathNode* TreeFindObjectStack(MathNode* node, MathExpression object, Stack* stk)
     return result;
 }
 
-MathNode* GetNodeFromStack(Stack* stk, size_t index)
+MathNode* GetNodeFromStack(const Stack* stk, const size_t index)
 {
     LogLine("Вызван GetNodeFromStack()", LOG_DEBUG);
     assert(stk);
@@ -296,7 +296,7 @@ bool TreeFindVariables(MathTree* problem)
     return TreeNodeFindVariables(problem->root, problem);
 }
 
-static bool TreeNodeFindVariables(MathNode* node, MathTree* problem)
+static bool TreeNodeFindVariables(const MathNode* node, MathTree* problem)
 {
     assert(node);
     assert(problem);
@@ -318,7 +318,7 @@ static bool TreeNodeFindVariables(MathNode* node, MathTree* problem)
     return res;
 }
 
-bool TreeFindVariable(MathTree* problem, char variable)
+bool TreeFindVariable(const MathTree* problem, const char variable)
 {
     assert(problem);
 
@@ -331,7 +331,7 @@ bool TreeFindVariable(MathTree* problem, char variable)
     return false;
 }
 
-static bool TreeAddVariable(MathTree* problem, char variable)
+static bool TreeAddVariable(MathTree* problem, const char variable)
 {
     assert(problem);
 
@@ -366,14 +366,14 @@ static bool TreeAddVariable(MathTree* problem, char variable)
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
-double TreeCalculate(MathTree* problem)
+double TreeCalculate(const MathTree* problem)
 {
     assert(problem);
 
     return CalculateNode(problem->root, problem, nullptr);
 }
 
-double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
+double CalculateNode(const MathNode* node, const MathTree* problem, bool* canCalculate)
 {
     assert(node);
     //assert(tree);
@@ -385,6 +385,7 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
             if (canCalculate)
                 *canCalculate = true;
             return GET_NUM(node);
+
         case ME_CONSTANT:
             if (canCalculate)
                 *canCalculate = true;
@@ -392,10 +393,12 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
             {
                 case ME_PI:
                     return Pi;
+
                 case ME_EXP:
                     return Exp;
             }
             break;
+
         case ME_VARIABLE:
             if (problem)
             {
@@ -410,6 +413,7 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
                 }
             }
             break;
+
         case ME_FUNCTION:
             if (TYPE_EQUAL(node, ME_NUMBER))
             {
@@ -419,33 +423,46 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
                 {
                     case ME_SIN:
                         return sin(GET_NUM(node));
+
                     case ME_COS:
                         return cos(GET_NUM(node));
+
                     case ME_TG:
                         return tan(GET_NUM(node));
+
                     case ME_CTG:
                         return 1.0 / tan(GET_NUM(node));
+
                     case ME_SH:
                         return sinh(GET_NUM(node));
+
                     case ME_CH:
                         return cosh(GET_NUM(node));
+
                     case ME_LN:
                         return log(GET_NUM(node));
+
                     case ME_SQRT:
                         return sqrt(GET_NUM(node));
+
                     case ME_CBRT:
                         return cbrt(GET_NUM(node));
+
                     case ME_ARCSIN:
                         return asin(GET_NUM(node));
+
                     case ME_ARCCOS:
                         return acos(GET_NUM(node));
+
                     case ME_ARCTG:
                         return atan(GET_NUM(node));
+
                     case ME_ARCCTG:
                         return Pi/2 - atan(GET_NUM(node));
                 }
             }
             break;
+
         case ME_OPERATOR:
             double leftVal = CALC(LEFT);
             if (canCalculate && !(*canCalculate))
@@ -459,12 +476,16 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
             {
                 case ME_ADDITION:
                     return leftVal + rightVal;
+
                 case ME_SUBTRACTION:
                     return leftVal - rightVal;
+
                 case ME_MULTIPLICATION:
                     return leftVal * rightVal;
+
                 case ME_DIVISION:
                     return leftVal / rightVal;
+
                 case ME_POWER:
                     return pow(leftVal, rightVal);
             }
@@ -484,9 +505,9 @@ double CalculateNode(MathNode* node, MathTree* problem, bool* canCalculate)
 
 #ifdef GRAPHVIZ
 
-static void CreateNodeGraph(FILE* file, MathNode* node, size_t parentId, bool IsRight);
+static void CreateNodeGraph(FILE* file, const MathNode* node, const size_t parentId, const bool IsRight);
 
-bool CreateTreeGraph(const char* outImagefileName, MathNode* node, bool openFile)
+bool CreateTreeGraph(const char* outImagefileName, const MathNode* node, const bool openFile)
 {
     LogLine("Вызван CreateTreeGraph()", LOG_DEBUG);
     assert(outImagefileName);
@@ -525,7 +546,7 @@ bool CreateTreeGraph(const char* outImagefileName, MathNode* node, bool openFile
     return true;
 }
 
-static void CreateNodeGraph(FILE* file, MathNode* node, size_t parentId, bool IsRight)
+static void CreateNodeGraph(FILE* file, const MathNode* node, const size_t parentId, const bool IsRight)
 {
     LogLine("Вызван CreateNodeGraph()", LOG_DEBUG);
     assert(file);
@@ -539,18 +560,23 @@ static void CreateNodeGraph(FILE* file, MathNode* node, size_t parentId, bool Is
         case ME_NUMBER:
             fprintf(file, "    node%zd[shape = pentagon,   fillcolor=chartreuse4, label = <", _nodeId);
             break;
+
         case ME_VARIABLE:
             fprintf(file, "    node%zd[shape = trapezium,  fillcolor=azure4,      label = <", _nodeId);
             break;
+
         case ME_CONSTANT:
             fprintf(file, "    node%zd[shape = house, fillcolor=darkslateblue, label = <", _nodeId);
             break;
+
         case ME_OPERATOR:
             fprintf(file, "    node%zd[shape = oval,       fillcolor=cadetblue1,  fontsize = 28, label = <", _nodeId);
             break;
+
         case ME_FUNCTION:
             fprintf(file, "    node%zd[shape = hexagon,    fillcolor=cadetblue3,  label = <", _nodeId);
             break;
+
         default:
             fprintf(file, "    node%zd[shape = rect,       fillcolor=darkred,     label = <", _nodeId);
             break;

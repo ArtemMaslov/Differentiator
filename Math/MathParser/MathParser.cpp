@@ -11,12 +11,12 @@
 
 static bool ParseTreeNodeValue(char** ptr, MathNode* node);
 
-static bool CheckCorrectInput(Text* text);
+static bool CheckCorrectInput(const Text* text);
 
-static void WriteTreeNodeToFile(MathNode* node, FILE* file, size_t recursiveLength);
+static void WriteTreeNodeToFile(const MathNode* node, FILE* file, const size_t recursiveLength);
 
 
-bool ParseMathTree(Text* text, MathTree* tree)
+bool ParseMathTree(const Text* text, MathTree* tree)
 {
     assert(text);
     assert(tree);
@@ -99,7 +99,7 @@ bool ParseMathTree(Text* text, MathTree* tree)
     return true;
 }
 
-void WriteTreeToFile(MathTree* problem, FILE* file)
+void WriteTreeToFile(const MathTree* problem, FILE* file)
 {
     assert(problem);
     assert(file);
@@ -125,11 +125,11 @@ bool ReadTreeFromFile(MathTree* tree, Text* text, FILE* file)
     return true;
 }
 
-static bool CheckCorrectInput(Text* text)
+static bool CheckCorrectInput(const Text* text)
 {
     assert(text);
 
-    char*  ptr = text->buffer;
+    const char* ptr = text->buffer;
     size_t lBracketsCount = 0;
     size_t rBracketsCount = 0;
 
@@ -179,7 +179,7 @@ static bool ParseTreeNodeValue(char** ptr, MathNode* node)
     return true;
 }
 
-static void WriteTreeNodeToFile(MathNode* node, FILE* file, size_t recursiveLength)
+static void WriteTreeNodeToFile(const MathNode* node, FILE* file, const size_t recursiveLength)
 {
     assert(node);
     assert(file);

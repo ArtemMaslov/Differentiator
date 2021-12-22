@@ -6,7 +6,7 @@
 
 
 #ifdef STACK_CRC
-int64_t CalculateCRC(char *buf, size_t len);
+int64_t CalculateCRC(const char *buf, size_t len);
 
 inline bool CheckDataCRC(Stack *stack)
 {

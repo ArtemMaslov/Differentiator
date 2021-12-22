@@ -15,11 +15,11 @@ struct DumpInfo
     const int   programm_line;
 };
 
-int IsStackEmpty(Stack *stack);
+int IsStackEmpty(const Stack *stack);
 
-bool CheckForError(int errors, StackError errorName);
+bool CheckForError(const int errors, const StackError errorName);
 
-bool IsStackBroken(int errors, Stack* stack);
+bool IsStackBroken(const int errors, const Stack* stack);
 
 
 #endif

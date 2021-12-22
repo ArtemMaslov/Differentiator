@@ -56,8 +56,7 @@ bool OpenLatexArticle(Latex* latex, const char* fileName)
     latex->file = fopen("article.tex", "w");
     latex->fileName = fileName;
     latex->problemCounter = 1;
-    latex->repl.size = 15;
-    latex->repl.nodes = (ReplNode*)calloc(latex->repl.size, sizeof(ReplNode));
+    ReplacementsConstructor(latex);
     srand(time(nullptr));
 
     if (!latex->file)
@@ -116,6 +115,8 @@ void CloseLatexArticle(Latex* latex)
         sprintf(cmd, "%s.%s", latex->fileName, pathes[st]);
         remove(cmd);
     }
+
+    ReplacementsDestructor(latex);
 }
 
 /**
@@ -123,7 +124,7 @@ void CloseLatexArticle(Latex* latex)
  * @param latex   Указатель на структуру Latex.
  * @param problem Дерево, содержащее производную, которую нужно взять.
 */
-void LatexMathProblem(Latex* latex, MathTree* problem)
+void LatexMathProblem(Latex* latex, const MathTree* problem)
 {
     if (!latex)
         return;
@@ -146,12 +147,11 @@ void LatexMathProblem(Latex* latex, MathTree* problem)
  * @param problem Условие задачи (функция, которую нужно продифференцировать).
  * @param answer  Ответ на задачу. (производная функции).
 */
-void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer)
+void LatexMathProblemAnswer(Latex* latex, MathTree* answer)
 {
     if (!latex)
         return;
     
-    assert(problem);
     assert(answer);
 
     DoReplacement(answer->root, latex, true);
@@ -169,7 +169,7 @@ void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer)
  * @param latex        Указатель на структуру Latex
  * @param sentenceType Код типов фраз, которые можно использовать (LatexTemplates.h)
 */
-void LatexRandSentence(Latex* latex, int sentenceType)
+void LatexRandSentence(Latex* latex, const int sentenceType)
 {
     if (!latex)
         return;
@@ -214,9 +214,11 @@ void LatexRandSentence(Latex* latex, int sentenceType)
                     case LATEX_COMMON1:
                         fputs(MathSentencesCommon1[rand() % LATEX_COMMON1_SIZE], latex->file);
                         return;
+
                     case LATEX_COMMON2:
                         fputs(MathSentencesCommon2[rand() % LATEX_COMMON2_SIZE], latex->file);
                         return;
+
                     case LATEX_OPERATOR:
                         fputs(MathSentencesOperators[rand() % LATEX_OPERATOR_SIZE], latex->file);
                         return;
@@ -295,7 +297,7 @@ void LatexMathFormula(Latex* latex, MathNode* lval, MathNode* rval)
  * @param latex Указатель на структуру Latex.
  * @param str   Строка.
 */
-void LatexString(Latex* latex, const char* str)
+void LatexString(const Latex* latex, const char* str)
 {
     if (!latex || latex->formulaSkipCounter > 0)
         return;
@@ -313,7 +315,7 @@ void LatexString(Latex* latex, const char* str)
  * @param format Формат строки (как в printf).
  * @param        Аргументы (как в printf).
 */
-void LatexFormatedString(Latex* latex, const char* format, ...)
+void LatexFormatedString(const Latex* latex, const char* format, ...)
 {
     if (!latex || latex->formulaSkipCounter > 0)
         return;
@@ -332,7 +334,7 @@ void LatexFormatedString(Latex* latex, const char* format, ...)
  * @param node Указатель на корень поддерева.
  * @param file Файл.
 */
-void PrintMathNodeLatex(MathNode* node, FILE* file)
+void PrintMathNodeLatex(const MathNode* node, FILE* file)
 {
     assert(node);
     assert(file);
@@ -351,6 +353,7 @@ void PrintMathNodeLatex(MathNode* node, FILE* file)
                 case ME_PI:
                     fputs("\\pi", file);
                     break;
+
                 case ME_EXP:
                     fputs("e", file);
                     break;
@@ -369,39 +372,51 @@ void PrintMathNodeLatex(MathNode* node, FILE* file)
                 case ME_SIN:
                     fputs("\\sin{", file);
                     break;
+
                 case ME_COS:
                     fputs("\\cos{", file);
                     break;
+
                 case ME_TG:
                     fputs("\\tan{", file);
                     break;
+
                 case ME_CTG:
                     fputs("\\cot{", file);
                     break;
+
                 case ME_SH:
                     fputs("\\sinh{", file);
                     break;
+
                 case ME_CH:
                     fputs("\\cosh{", file);
                     break;
+
                 case ME_LN:
                     fputs("\\ln{", file);
                     break;
+
                 case ME_SQRT:
                     fputs("\\sqrt{", file);
                     break;
+
                 case ME_CBRT:
                     fputs("\\cbrt{", file);
                     break;
+
                 case ME_ARCSIN:
                     fputs("\\arcsin{", file);
                     break;
+
                 case ME_ARCCOS:
                     fputs("\\arccos{", file);
                     break;
+
                 case ME_ARCTG:
                     fputs("\\arctan{", file);
                     break;
+
                 case ME_ARCCTG:
                     fputs("\\frac{\\pi}{2} - \\arctan{", file);
                     break;
@@ -460,6 +475,7 @@ void PrintMathNodeLatex(MathNode* node, FILE* file)
                     fputs(" \\cdot ", file);
                     PrintMathNodeLatex(node->nodeRight, file);
                     break;
+
                 case ME_DIVISION:
                     fputs("\\frac{", file);
                     PrintMathNodeLatex(node->nodeLeft, file);
@@ -467,6 +483,7 @@ void PrintMathNodeLatex(MathNode* node, FILE* file)
                     PrintMathNodeLatex(node->nodeRight, file);
                     fputc('}', file);
                     break;
+
                 case ME_POWER:
                 {
                     bool parenthesesNeed = !(

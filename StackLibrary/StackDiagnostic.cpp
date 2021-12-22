@@ -16,7 +16,7 @@ extern FILE* stackLogFile;
 #endif // StackLogs
 
 
-int ValidateStack(Stack *stack)
+int ValidateStack(const Stack *stack)
 {
 #ifdef STACK_LOGS
     LogLine(stackLogFile, "ValidateStack", DEBUG);
@@ -108,7 +108,7 @@ int ValidateStack(Stack *stack)
     return error;
 }
 
-int IsStackEmpty(Stack *stack)
+int IsStackEmpty(const Stack *stack)
 {
     assert(stack);
 
@@ -132,7 +132,7 @@ int IsStackEmpty(Stack *stack)
         return STACKERR_STACK_IS_NOT_INITED;
 }
 
-bool CheckForError(int errors, StackError errorName)
+bool CheckForError(const int errors, const StackError errorName)
 {
     if ((errors & errorName) > 0)
         return true;
@@ -140,7 +140,7 @@ bool CheckForError(int errors, StackError errorName)
         return false;
 }
 
-bool IsStackBroken(int errors, Stack* stack)
+bool IsStackBroken(const int errors, const Stack* stack)
 {
     if (stack)
     {
@@ -158,7 +158,7 @@ bool IsStackBroken(int errors, Stack* stack)
     return true;
 }
 
-void StackDump_(Stack *stack, FILE *file,
+void StackDump_(const Stack *stack, FILE *file,
     const char *stack_variable_name,
     const char *stack_function_name,
     const char *stack_file,

@@ -32,14 +32,19 @@
 *.app
 
 
-*.vs/Differentiator*
-*/Debug/*
-Debug/*
-x64/*
 out.txt
-
 *.aux
 /Latex/*.log
 /Latex/*.pdf
 *.gz
 *.toc
+
+.vs
+Debug
+Release
+Differentiator/Debug
+Differentiator/Release
+Differentiator/x64
+Differentiator/x86
+x86
+x64

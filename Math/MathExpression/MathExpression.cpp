@@ -9,7 +9,7 @@
 
 
 static int CheckStrForMathExpressionType(const char* ptr, const char* meStrings,
-                                         size_t stringsCount, size_t stringsLength, size_t count);
+                                         const size_t stringsCount, const size_t stringsLength, const size_t count);
 
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
@@ -84,7 +84,7 @@ bool MathExpressionParseString(MathExpression* expr, const char* ptr, const size
     return false;
 }
 
-bool MathExpressionEqual(MathExpression* expr1, MathExpression* expr2)
+bool MathExpressionEqual(const MathExpression* expr1, const MathExpression* expr2)
 {
     assert(expr1);
     assert(expr2);
@@ -100,22 +100,27 @@ bool MathExpressionEqual(MathExpression* expr1, MathExpression* expr2)
             if (expr1->me_number == expr2->me_number)
                 return true;
             break;
+
         case ME_CONSTANT:
             if (expr1->me_constant == expr2->me_constant)
                 return true;
             break;
+
         case ME_OPERATOR:
             if (expr1->me_operator == expr2->me_operator)
                 return true;
             break;
+
         case ME_VARIABLE:
             if (expr1->me_variable == expr2->me_variable)
                 return true;
             break;
+
         case ME_FUNCTION:
             if (expr1->me_function == expr2->me_function)
                 return true;
             break;
+
         default:
             LogLine("Неопознанный тип математического выражения.", LOG_ERROR, true);
             break;
@@ -123,7 +128,7 @@ bool MathExpressionEqual(MathExpression* expr1, MathExpression* expr2)
     return false;
 }
 
-void PrintMathExpression(MathExpression* expr, FILE* file)
+void PrintMathExpression(const MathExpression* expr, FILE* file)
 {
     assert(expr);
     assert(file);
@@ -133,18 +138,23 @@ void PrintMathExpression(MathExpression* expr, FILE* file)
         case ME_NUMBER:
             fprintf(file, "%.6lg", expr->me_number);
             break;
+
         case ME_CONSTANT:
             fputs(MathConstantNames[expr->me_constant], file);
             break;
+
         case ME_OPERATOR:
             fputs(MathOperatorNames[expr->me_operator], file);
             break;
+
         case ME_VARIABLE:
             fputc(expr->me_variable, file);
             break;
+
         case ME_FUNCTION:
             fputs(MathFunctionNames[expr->me_function], file);
             break;
+
         default:
             LogLine("Неизвестный тип математического выражения.", LOG_ERROR, true);
             break;
@@ -155,7 +165,7 @@ void PrintMathExpression(MathExpression* expr, FILE* file)
 ///***///***///---\\\***\\\***\\\___///***___***\\\___///***///***///---\\\***\\\***\\\
 
 static int CheckStrForMathExpressionType(const char* ptr, const char* meStrings,
-                                          size_t stringsCount, size_t stringsLength, size_t count)
+                                         const size_t stringsCount, const size_t stringsLength, const size_t count)
 {
     assert(ptr);
     assert(meStrings);

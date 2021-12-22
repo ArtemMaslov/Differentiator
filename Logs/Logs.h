@@ -19,24 +19,24 @@ enum LogLevel
 extern const char* GraphLogPath;
 
 /**
- * @brief             Конструктор файла логов.
- * @param logFileName Имя выходного файла с логами.
- * @param caption     Заголовок файла логов.
+ * @brief             РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ С„Р°Р№Р»Р° Р»РѕРіРѕРІ.
+ * @param logFileName РРјСЏ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р° СЃ Р»РѕРіР°РјРё.
+ * @param caption     Р—Р°РіРѕР»РѕРІРѕРє С„Р°Р№Р»Р° Р»РѕРіРѕРІ.
 */
 bool LogConstructor(const char* logFileName, const char* caption);
 
 /**
- * @brief      Закрывает файл логов.
+ * @brief      Р—Р°РєСЂС‹РІР°РµС‚ С„Р°Р№Р» Р»РѕРіРѕРІ.
 */
 void LogDestructor();
 
 /**
- * @brief                    Добавляет строку в файл логов.
- * @param file               Указатель на поток вывода.
- * @param message            Строка, которую необходимо добавить.
- * @param dublicateToConsole Если true, то дублирует сообщения в консоль. По умолчанию false
+ * @brief                    Р”РѕР±Р°РІР»СЏРµС‚ СЃС‚СЂРѕРєСѓ РІ С„Р°Р№Р» Р»РѕРіРѕРІ.
+ * @param file               РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕС‚РѕРє РІС‹РІРѕРґР°.
+ * @param message            РЎС‚СЂРѕРєР°, РєРѕС‚РѕСЂСѓСЋ РЅРµРѕР±С…РѕРґРёРјРѕ РґРѕР±Р°РІРёС‚СЊ.
+ * @param dublicateToConsole Р•СЃР»Рё true, С‚Рѕ РґСѓР±Р»РёСЂСѓРµС‚ СЃРѕРѕР±С‰РµРЅРёСЏ РІ РєРѕРЅСЃРѕР»СЊ. РџРѕ СѓРјРѕР»С‡Р°РЅРёСЋ false
 */
-void LogLine(const char* message, int logLevel, bool dublicateToConsole = false);
+void LogLine(const char* message, const int logLevel, const bool dublicateToConsole = false);
 
 void CreateHtmlGraphicLog(const char* imagesName);
 
