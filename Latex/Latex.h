@@ -61,25 +61,25 @@ const size_t MaxNodesCount = 15;
 const size_t MaxNodesCountPerLine = 30;
 
 
-bool OpenLatexArticle(Latex* latex, const char* FileName);
+bool OpenLatexArticle(Latex* latex, const char* fileName);
 
 void CloseLatexArticle(Latex* latex);
 
-void LatexMathProblem(Latex* latex, MathTree* problem);
+void LatexMathProblem(Latex* latex, const MathTree* problem);
 
-void LatexFormatedString(Latex* latex, const char* format, ...);
+void LatexFormatedString(const Latex* latex, const char* format, ...);
 
-void LatexString(Latex* latex, const char* str);
+void LatexString(const Latex* latex, const char* str);
 
 void LatexMathDiffFormula(Latex* latex, MathNode* lval, MathNode* rval);
 
-void LatexRandSentence(Latex* latex, int sentenceType);
+void LatexRandSentence(Latex* latex, const int sentenceType);
 
-void LatexMathProblemAnswer(Latex* latex, MathTree* problem, MathTree* answer);
+void LatexMathProblemAnswer(Latex* latex, MathTree* answer);
 
 void LatexMathFormula(Latex* latex, MathNode* lval, MathNode* rval);
 
-void PrintMathNodeLatex(MathNode* node, FILE* file);
+void PrintMathNodeLatex(const MathNode* node, FILE* file);
 
 
 #endif

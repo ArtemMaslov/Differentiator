@@ -8,11 +8,11 @@
 #include "..\..\StdParser\StdParser.h"
 
 
-bool ParseMathTree(Text* text, MathTree* problem);
+bool ParseMathTree(const Text* text, MathTree* problem);
 
 bool ReadTreeFromFile(MathTree* problem, Text* text, FILE* file);
 
-void WriteTreeToFile(MathTree* problem, FILE* file);
+void WriteTreeToFile(const MathTree* problem, FILE* file);
 
 
 #endif

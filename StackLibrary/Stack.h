@@ -121,7 +121,7 @@ const double STACK_CAPACITY_DECREASE_COEFFICIENT = 0.1;
  * @param Capacity    Начальная вместимость стека. По умолчанию 0. Если значение больше 0, то под данные будет выделена память.
  * @return            Код ошибки, 0 - в случае успешного завершения.
 */
-int   StackConstructor(Stack *stack, size_t elementSize, size_t Capacity = 0);
+int   StackConstructor(Stack *stack, const size_t elementSize, const size_t Capacity = 0);
 
 /**
  * @brief       Деструктор стека.
@@ -136,7 +136,7 @@ int   StackDestructor(Stack *stack);
  * @param value Указатель на значение, которое нужно добавить в стек.
  * @return      Код ошибки, 0 - в случае успешного завершения.
 */
-int   StackPush(Stack *stack, void *expression);
+int   StackPush(Stack *stack, const void *data);
 
 /**
  * @brief       Удаляет элемент из конца стека и возвращает его.
@@ -151,9 +151,9 @@ void* StackPop(Stack *stack, int *error = nullptr);
  * @param stack Указатель на стек.
  * @return      Возвращает коды ошибок текущего состояния стека.
 */
-int   ValidateStack(Stack *stack);
+int   ValidateStack(const Stack *stack);
 
-void* StackGetElemAt(Stack* stack, size_t index);
+void* StackGetElemAt(const Stack* stack, const size_t index);
 
 //#define StackDump(stack, file, programm_function_name, programm_file, programm_line) \
 //StackDump_(stack, file, #stack, __FUNCTION__, __FILE__, __LINE__, programm_function_name, programm_file, programm_line);
@@ -178,7 +178,7 @@ StackDump_(stack, file, #stack, __FUNCTION__, __FILE__, __LINE__, "", "", -1);
  * @param programm_file          Имя файла в программе, использующей StackLibrary.
  * @param programm_line          Номер строки кода в программе, использующей StackLibrary.
 */
-void StackDump_(Stack *stack, FILE *file,
+void StackDump_(const Stack *stack, FILE *file,
     const char *stack_variable_name,
     const char *stack_function_name,
     const char *stack_file,

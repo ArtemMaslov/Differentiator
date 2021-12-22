@@ -36,7 +36,7 @@ void LogDestructor();
  * @param message            Строка, которую необходимо добавить.
  * @param dublicateToConsole Если true, то дублирует сообщения в консоль. По умолчанию false
 */
-void LogLine(const char* message, int logLevel, bool dublicateToConsole = false);
+void LogLine(const char* message, const int logLevel, const bool dublicateToConsole = false);
 
 void CreateHtmlGraphicLog(const char* imagesName);
 

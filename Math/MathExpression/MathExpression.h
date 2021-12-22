@@ -128,9 +128,9 @@ struct MathExpression
 
 bool MathExpressionParseString(MathExpression* expr, const char* ptr, const size_t count);
 
-bool MathExpressionEqual(MathExpression* expr1, MathExpression* expr2);
+bool MathExpressionEqual(const MathExpression* expr1, const MathExpression* expr2);
 
-void PrintMathExpression(MathExpression* expr, FILE* file);
+void PrintMathExpression(const MathExpression* expr, FILE* file);
 
 
 #endif

@@ -10,7 +10,7 @@
 #include "..\Latex\LatexReplacements.h"
 
 
-static MathNode* DifferentiateNode(MathNode* nodeSrc, char diffVar, Latex* latex);
+static MathNode* DifferentiateNode(MathNode* nodeSrc, const char diffVar, Latex* latex);
 
 static void DiffTreeOptimize(MathNode* problem, Latex* latex);
 
@@ -35,7 +35,7 @@ void DifferentiatorDestructor(Differentiator* diff)
     TextDestructor(&diff->text);
 }
 
-bool Differentiate(Differentiator* diff, char diffVar, Latex* latex)
+bool Differentiate(Differentiator* diff, const char diffVar, Latex* latex)
 {
     assert(diff);
     assert(latex);
@@ -59,7 +59,7 @@ bool Differentiate(Differentiator* diff, char diffVar, Latex* latex)
                     DIF(cmp_src, diffVar))
 
 
-static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
+static MathNode* DifferentiateNode(MathNode* node, const char diffVar, Latex* latex)
 {
     assert(node);
     //assert(latex);
@@ -72,23 +72,28 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
         case ME_CONSTANT:
         case ME_NUMBER:
             result = NUM(0);
+
             LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
             LatexString(latex, "производная константы равна 0.");
             break;
+
         case ME_VARIABLE:
             if (IS_DIFF_VAR)
             {
                 result = NUM(1);
+
                 LatexRandSentence(latex, LATEX_COMMON1);
                 LatexString(latex, "производная x равна 1.");
             }
             else
             {
                 result = NUM(0);
+
                 LatexRandSentence(latex, LATEX_COMMON2);
                 LatexString(latex, "производная не дифференцируемой переменной принимается равной 0.");
             }
             break;
+
         case ME_FUNCTION:
             switch (node->expression.me_function)
             {
@@ -157,21 +162,28 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
 
                 case ME_ARCSIN:
                     result = COMPLEX_FUNC(DIV( NUM(1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная $(\\arcsin{x})^\\prime = \\frac{1}{\\sqrt{1 - x^2}}$.");
                     break;
+
                 case ME_ARCCOS:
                     result = COMPLEX_FUNC(DIV( NUM(-1), FUNC( ME_SQRT, SUB( NUM(1), POW2(COPY(X)) ) ) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная $(\\arccos{x})^\\prime = \\frac{-1}{\\sqrt{1 - x^2}}$.");
                     break;
+
                 case ME_ARCTG:
                     result = COMPLEX_FUNC(DIV( NUM(1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, "производная $(\\arctan{x})^\\prime = \\frac{1}{1 + x^2}$.");
                     break;
+
                 case ME_ARCCTG:
                     result = COMPLEX_FUNC(DIV( NUM(-1), ADD( NUM(1), POW2(COPY(X)) ) ), X);
+
                     LatexRandSentence(latex, LATEX_COMMON1 | LATEX_COMMON2);
                     LatexString(latex, " у производной акркотангенса очень красивая формула: $\\frac{-1}{1 + x^2}$.");
                     break;
@@ -182,30 +194,39 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
             {
                 case ME_SUBTRACTION:
                     result = SUB(DIF(LEFT), DIF(RIGHT));
+
                     LatexRandSentence(latex, LATEX_OPERATOR);
                     LatexString(latex, "производная разности равна разности производных, \\sout{что не скажешь о производной частного}.");
                     break;
+
                 case ME_ADDITION:
                     result = ADD(DIF(LEFT), DIF(RIGHT));
+
                     LatexRandSentence(latex, LATEX_OPERATOR);
                     LatexString(latex, "производная суммы просто равна сумме производных.");
                     break;
+
                 case ME_MULTIPLICATION:
                     result = ADD(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT)));
+
                     LatexRandSentence(latex, LATEX_OPERATOR);
                     LatexString(latex, "производная произведения равна $(f(x) \\cdot g(x))^\\prime = (f(x))^\\prime \\cdot g(x) + (g(x))^\\prime \\cdot f(x)$.");
                     break;
+
                 case ME_DIVISION:
                     result = DIV( SUB(MUL(DIF(LEFT), COPY(RIGHT)), MUL(DIF(RIGHT), COPY(LEFT))),
                                 POW2(COPY(RIGHT)));
+
                     LatexRandSentence(latex, LATEX_OPERATOR);
                     LatexString(latex, "производная частного \\sout{имеет очень громоздкую формулу} равна $(f(x) \\cdot g(x))^\\prime = \\frac{(f(x))^\\prime \\cdot g(x) - (g(x))^\\prime \\cdot f(x)}{(g(x))^2}$.");
                     break;
+
                 case ME_POWER:
                     if (TYPE_EQUAL(RIGHT, ME_CONSTANT) ||
                         TYPE_EQUAL(RIGHT, ME_NUMBER))
                     {
                         result = MUL(MUL( NUM(GET_NUM(RIGHT)), POW( COPY(LEFT), SUB(NUM(GET_NUM(RIGHT)), NUM(1)) ) ), DIF(LEFT) );
+
                         LatexRandSentence(latex, LATEX_COMMON2);
                         LatexString(latex, "производная степенной функции вычисляется легко по формуле: $(x^n)^\\prime = n \\cdot x^{n-1}$");
                     }
@@ -216,6 +237,7 @@ static MathNode* DifferentiateNode(MathNode* node, char diffVar, Latex* latex)
                             MUL( DIV(COPY(RIGHT), COPY(LEFT)), DIF(LEFT) ), 
                             MUL( FUNC(ME_LN, COPY(LEFT)), DIF(RIGHT) )
                             ) );
+
                         LatexRandSentence(latex, LATEX_COMMON2);
                         LatexString(latex, "производную функции, содержащей возведение в степень всегда неприятно считать! Ведь производная равна такому крокодилу: $(f(x)^{g(x)})^\\prime = f(x)^{g(x)} \\cdot (\\ln{f(x)} \\cdot g(x))^\\prime$");
                     }

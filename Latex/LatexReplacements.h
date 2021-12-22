@@ -4,7 +4,13 @@
 
 #include "Latex.h"
 
-void DoReplacement(MathNode* node, Latex* latex, bool clearIndex = false);
+const size_t ReplacementsMinSize = 15;
+
+bool ReplacementsConstructor(Latex* latex);
+
+void ReplacementsDestructor(Latex* latex);
+
+void DoReplacement(MathNode* node, Latex* latex, const bool clearIndex = false);
 
 void PrintReplacedNodes(Latex* latex);
 

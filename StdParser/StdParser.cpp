@@ -12,7 +12,7 @@ char* SkipSpaceSymbolsLeft(char* ptr)
     return ptr;
 }
 
-size_t SkipSpaceSymbolsRight(char* ptr, size_t strLength)
+size_t SkipSpaceSymbolsRight(const char* ptr, size_t strLength)
 {
     assert(ptr);
 

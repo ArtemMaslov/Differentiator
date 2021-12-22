@@ -19,7 +19,7 @@ FILE* stackLogFile = nullptr;
 
 static Stack* StackResize(Stack *stack, int *error);
 
-static size_t CalculateDecreasedCapacity(size_t oldCapacity, size_t stackSize, bool* shouldResize);
+static size_t CalculateDecreasedCapacity(const size_t oldCapacity, const size_t stackSize, bool* shouldResize);
 
 void StackLogConstructor(FILE* file)
 {
@@ -27,7 +27,7 @@ void StackLogConstructor(FILE* file)
 }
 
 
-int StackConstructor(Stack *stack, size_t elementSize, size_t Capacity)
+int StackConstructor(Stack *stack, const size_t elementSize, const size_t Capacity)
 {
 #ifdef STACK_LOGS
     assert(stackLogFile);
@@ -98,7 +98,7 @@ int StackDestructor(Stack *stack)
     return STACKERR_NO_ERRORS;
 }
 
-int StackPush(Stack *stack, void *expression)
+int StackPush(Stack *stack, const void *data)
 {
 #ifdef STACK_LOGS
     LogLine(stackLogFile, "StackPush", DEBUG);
@@ -106,7 +106,7 @@ int StackPush(Stack *stack, void *expression)
 
     int error = ValidateStack(stack);
 
-    if (expression == nullptr)
+    if (data == nullptr)
     {
 #ifdef STACK_LOG_ERRORS
     LogLine(stackLogFile, "ERROR: Trying to push null value", ERROR);
@@ -122,7 +122,7 @@ int StackPush(Stack *stack, void *expression)
 
     if (stack)
     {
-        memmove((char*)stack->data + stack->elementSize * stack->stackSize++, expression, stack->elementSize);
+        memmove((char*)stack->data + stack->elementSize * stack->stackSize++, data, stack->elementSize);
 #ifdef STACK_CRC
         CalculateStackCRC(stack);
 #endif
@@ -180,7 +180,7 @@ void* StackPop(Stack *stack, int *error)
     return (char*)stack->data + (stack->elementSize * stack->stackSize);
 }
 
-void* StackGetElemAt(Stack* stack, size_t index)
+void* StackGetElemAt(const Stack* stack, const size_t index)
 {
     if (index > stack->stackSize)
         return nullptr;
@@ -264,7 +264,7 @@ static Stack* StackResize(Stack *stack, int *error)
     return stack;
 }
 
-static size_t CalculateDecreasedCapacity(size_t oldCapacity, size_t stackSize, bool* shouldResize)
+static size_t CalculateDecreasedCapacity(const size_t oldCapacity, const size_t stackSize, bool* shouldResize)
 {
     size_t proportionalCapacity = (oldCapacity * (0.5 - STACK_CAPACITY_DECREASE_COEFFICIENT)) > 0 ? 
                                    (size_t)(oldCapacity * (0.5 - STACK_CAPACITY_DECREASE_COEFFICIENT)) : 0;

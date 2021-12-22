@@ -72,7 +72,7 @@ void LogDestructor()
  * @param message            Строка, которую необходимо добавить.
  * @param dublicateToConsole Если true, то дублирует сообщения в консоль. По умолчанию false
 */
-void LogLine(const char* message, int logLevel, bool dublicateToConsole)
+void LogLine(const char* message, const int logLevel, const bool dublicateToConsole)
 {
     assert(message);
 
@@ -96,12 +96,15 @@ void LogLine(const char* message, int logLevel, bool dublicateToConsole)
             case LOG_DEBUG:
                 fprintf(logFile, "<pre><font color=\"5C65C0\">%s</font><font color=\"E0E0E0\">%s</font></pre>\n", date, message);
                 break;
+
             case LOG_WARNING:
                 fprintf(logFile, "<pre><font color=\"5C65C0\">%s</font><font color=\"E89827\">%s</font></pre>\n", date, message);
                 break;
+
             case LOG_ERROR:
                 fprintf(logFile, "<pre><font color=\"5C65C0\">%s</font><font color=\"E84127\">%s</font></pre>\n", date, message);
                 break;
+
         }
         free(date);
 

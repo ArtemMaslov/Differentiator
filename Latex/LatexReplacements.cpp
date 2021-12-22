@@ -7,6 +7,7 @@
 
 #include "Latex.h"
 #include "..\Logs\Logs.h"
+#include "LatexReplacements.h"
 
 
 static bool AddNodeToLatexVariables(MathNode* node, Latex* latex);
@@ -14,6 +15,23 @@ static bool AddNodeToLatexVariables(MathNode* node, Latex* latex);
 static bool DoNodeReplacement(MathNode* node, Latex* latex);
 
 static void DoNodeReverseRaplacement(Latex* latex);
+
+bool ReplacementsConstructor(Latex* latex)
+{
+    assert(latex);
+
+    latex->repl.size = ReplacementsMinSize;
+    latex->repl.nodes = (ReplNode*)calloc(latex->repl.size, sizeof(ReplNode));
+
+    return latex->repl.nodes != nullptr;
+}
+
+void ReplacementsDestructor(Latex* latex)
+{
+    assert(latex);
+
+    free(latex->repl.nodes);
+}
 
 /**
  * @brief       Записывает расшифроку замен выражений в файл, используя структуру Replacements.
@@ -38,7 +56,7 @@ void PrintReplacedNodes(Latex* latex)
 
         PrintMathNodeLatex(latex->repl.nodes[st].replacedTree, latex->file);
     
-        fprintf(latex->file, "\n\\end{equation}\n\n", latex->formulaCounter++);
+        fprintf(latex->file, "\n\\end{equation}\n\n");
     }
     
     DoNodeReverseRaplacement(latex);
@@ -51,7 +69,7 @@ void PrintReplacedNodes(Latex* latex)
  * @param latex      Указатель на структуру Latex.
  * @param clearIndex Установить в true, если это корень дерева.
 */
-void DoReplacement(MathNode* node, Latex* latex, bool clearIndex)
+void DoReplacement(MathNode* node, Latex* latex, const bool clearIndex)
 {
     assert(node);
     assert(latex);

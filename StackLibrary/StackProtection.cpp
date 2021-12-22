@@ -7,7 +7,7 @@
 #include "StackProtection.h"
 
 
-int64_t CalculateCRC(char *buf, size_t len)
+int64_t CalculateCRC(const char *buf, size_t len)
 {
     assert(buf);
 
